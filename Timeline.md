@@ -1,6 +1,9 @@
 # Timeline for project
+\vspace{-0.1cm}
 ### Arman Norouzi
+\vspace{-0.1cm}
 ### Arman.norouzi@stud.ki.se
+\vspace{-0.1cm}
 ### 2020-09-08
 
 ### 8 Sept
