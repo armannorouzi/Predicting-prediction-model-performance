@@ -1,3 +1,8 @@
+# Timeline for project
+### Arman Norouzi
+### Arman.norouzi@stud.ki.se
+### 2020-09-08
+
 ### 8 Sept
 - [x] Github account created                                     
 - [x] Project repository created  
