@@ -37,7 +37,7 @@ The predictor data used to estimate outcomes in our study are respiratory rate (
 The outcome of this study is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.
 
 ## Missing data
-Due to the database only consisting of participants with complete NEWS parameters we have decided to account for missing data by conducting a complete case analysis. 
+Because the prediction data that we use in this study largely consist of NEWS parameters and that our database only included patients with complete NEWS parameters, we have decided to carry out a complete case analysis.  
 
 ## Statistical methods
 *Dataset*  
