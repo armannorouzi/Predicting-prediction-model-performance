@@ -65,16 +65,16 @@ The segment of participants in the validation sample that have been identified a
 Finally, the difference in accuracy between model development and model validation is calculated and the same is done between model development and propensity model validation. To evaluate the different methods of estimating outcome in the validation sample the difference between the differences are calculated. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
 
 ## Ethical considerations
-*Principle of autonomy*
+*Principle of autonomy*  
 The data used in the original  observational study has been approved by the institutional review boards of the three hospitals and has since been published for general use. Therefore the respect of autonomy is upheld.
 
-*Principle of beneficence*
+*Principle of beneficence*  
 This study will attempt to act in the best interest of future analytical research and indirectly patients, in an attempt to find new ways of predicting prediction model performance in a transfer setting while only utilizing predictor data.
 
-*Principle of nonmaleficence*
+*Principle of nonmaleficence*  
 The attempts made in this study will be made without the intention of harm, intentionally or unintentionally. Due to the database being depersonalized and publicized there is no way of identification leakage from this study.
 
-*Principle of Justice*
+*Principle of Justice*  
 Because this study is analytical, the principle of justice does not prevail. The data in the study will be treated equally.
 
 *Ethical permit*
