@@ -55,10 +55,10 @@ During this step a prediction model is developed with the development sample in 
 *Model validation*  
 To examine the accuracy of the model in another setting the prediction model that has been developed in the previous stage will be used to estimate the outcome within the validation sample.
 
-*Propensity model development*
+*Propensity model development*  
 During this step, the predictor data from the development and the validation sample will be combined to train a propensity model to discriminate between observations from the two samples. The propensity model will then be used to identify similarities (ex: propensity score difference < 0,05) between the two samples.
 
-*Propensity model validation*
+*Propensity model validation*  
 The segment of participants in the validation sample that have been identified as similarities are then included in a new validation sample. This new validation sample is then used to calculate the accuracy of the prediction model previously mentioned in model development.
 
 *Model comparison*  
