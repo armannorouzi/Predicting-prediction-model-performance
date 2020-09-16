@@ -47,7 +47,7 @@ The publicly available register that has been previously mentioned in the study 
 Each of the data sets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (10). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
  
 *Sequence of analysis*  
-Analysis in this study is all performed in the programming language python (11). The sequence of analysis to conduct this study is model development, model validation, propensity model development, propensity model validation and model comparison. 
+Analysis in this study is all performed in the programming language python (11). The sequence of analysis to conduct this study is model development, model validation, propensity method model development, propensity method model validation and model comparison. 
 
 *Model development*  
 During this step a prediction model is developed with the development sample in each data set by using logistic regression implemented in the scikit-learn package in python (12). To avoid overfitting the model we will utilize a bootstrap to estimate a linear shrinkage factor that will be applied to the model coefficients (13). The shrunk model will then be used to calculate the accuracy of the model within the development sample.
@@ -55,14 +55,15 @@ During this step a prediction model is developed with the development sample in 
 *Model validation*  
 To examine the accuracy of the model in another setting the prediction model that has been developed in the previous stage will be used to estimate the outcome within the validation sample.
 
-*Propensity model development*  
-During this step, the predictor data from the development and the validation sample will be combined to train a propensity model to discriminate between observations from the two samples. The propensity model will then be used to identify similarities between the two samples.
+*Propensity method model development*  
+During this step, data from the development and validation sample are pooled into one sample. This aggregated sample is then used to train a propensity model to distinguish which data belongs to which sample. Data from the development sample that are misclassified as validation data, are used to form a separate segment. The segment is then used to develop a prediction model.
 
-*Propensity model validation*  
-The segment of participants in the validation sample that have been identified as similarities are then included in a new validation sample. This new validation sample is then used to calculate the accuracy of the prediction model previously mentioned in model development.
+*Propensity method model validation*  
+The prediction model developed with the segmented data is then used to calculate the accuracy of predicting outcome within the validation sample.
 
 *Model comparison*  
-Finally, the difference in accuracy between model development and model validation is calculated and the same is done between model development and propensity model validation. To evaluate the different methods of estimating outcome in the validation sample the difference between the differences are calculated. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
+Finally, the difference in accuracy between model development and model validation is calculated and the same is done between model development and propensity method model validation. To evaluate the different methods of estimating outcome in the validation sample the difference between the differences are calculated. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
+
 
 ## Ethical considerations
 *Principle of autonomy*  
