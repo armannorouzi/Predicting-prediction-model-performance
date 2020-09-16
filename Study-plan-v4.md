@@ -15,7 +15,7 @@ A great example of a well known clinical prediction model is the Framingham Risk
 
 But collecting outcome data from a new setting to calculate the accuracy of the prediction model to eventually make adjustments to increase that accuracy, can be difficult in various ways. In the case of the Framingham Risk Score, to perform such calculations in a new setting would require outcome data that can only be collected after 10-years of follow up (6). This presents a problem that is both time inefficient and expensive. It would therefore be desirable to have a method that could decrease the drop in performance of internally validated prediction models when they are transferred to a new setting by only utilizing predictor data.  
 
-At present, the only way to increase the performance of an internally validated prediction model within a transfer setting, in which the prediction model is performing poorly, is to have complete data from the new setting. Therefore the aim of this study is to develop and test new methods to predict prediction model performance in a transfer setting while only utilizing predictor data, in an attempt to decrease the drop in performance when transfering the model.
+At present, the only way to increase the performance of an internally validated prediction model within a transfer setting, in which the prediction model is performing poorly, is to have complete data from the new setting. Therefore the aim of this study is to develop and test new methods to predict prediction model performance in a transfer setting while only utilizing predictor data, in an attempt to decrease the performance drop when transfering the model.
 
 # Methods
 ## Study design
