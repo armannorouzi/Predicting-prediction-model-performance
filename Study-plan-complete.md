@@ -93,28 +93,28 @@ Because this study is analytical, the principle of justice does not prevail. The
 Due to this study being an analytical study based on a public database the need for an ethical permit is not required. 
 
 # References
-[1][@steyerberg2013prognosis]   Steyerberg EW, Moons KG, van der Windt DA, Hayden JA, Perel P, Schroter S, Riley RD, Hemingway H, Altman DG, PROGRESS Group. Prognosis Research Strategy (PROGRESS) 3: prognostic model research. PLoS Med. 2013 Feb 5;10(2):e1001381.
-[2][@moons2009prognosis]   Moons KG, Royston P, Vergouwe Y, Grobbee DE, Altman DG. Prognosis and prognostic research: what, why, and how?. Bmj. 2009 Feb 23;338:b375.
-[3][@collins2015transparent]   Collins GS, Reitsma JB, Altman DG, Moons KG. Transparent Reporting of a Multivariable Prediction Model for Individual Prognosis or Diagnosis (TRIPOD) The TRIPOD Statement. Circulation. 2015 Jan 13;131(2):211-9.
-[4][@riley2013prognosis]   Riley RD, Hayden JA, Steyerberg EW, Moons KG, Abrams K, Kyzas PA, Malats N, Briggs A, Schroter S, Altman DG, Hemingway H. Prognosis Research Strategy (PROGRESS) 2: prognostic factor research. PLoS Med. 2013 Feb 5;10(2):e1001380.
-[5][@bookforreference1]   Steyerberg EW. Clinical prediction models: a practical approach to development, validation, and updating. Springer, 2009.
-**obs selfmade reference in cite.bib**
-[6][@dorresteijn2011estimating]   Dorresteijn JA, Visseren FL, Ridker PM, Wassink AM, Paynter NP, Steyerberg EW, van der Graaf Y, Cook NR. Estimating treatment effects for individual patients based on the results of randomised clinical trials. Bmj. 2011 Oct 3;343:d5888.
-[7][@hayward2006multivariable]   Hayward RA, Kent DM, Vijan S, Hofer TP. Multivariable risk prediction can greatly enhance the statistical power of clinical trial subgroup analysis. BMC medical research methodology. 2006 Dec 1;6(1):18.
-[8][@stiell1992study]   Stiell IG, Greenberg GH, McKnight RD, Nair RC, McDowell I, Worthington JR. A study to develop clinical decision rules for the use of radiography in acute ankle injuries. Annals of emergency medicine. 1992 Apr 1;21(4):384-90.
-[9][@lip2010refining]   Lip GY, Nieuwlaat R, Pisters R, Lane DA, Crijns HJ. Refining clinical risk stratification for predicting stroke and thromboembolism in atrial fibrillation using a novel risk factor-based approach: the euro heart survey on atrial fibrillation. Chest. 2010 Feb 1;137(2):263-72.
-[10][@anderson1991cardiovascular]  Anderson KM, Odell PM, Wilson PW, Kannel WB. Cardiovascular disease risk profiles. American heart journal. 1991 Jan 1;121(1):293-8.
-[11][@royston2009prognosis]  Royston P, Moons KG, Altman DG, Vergouwe Y. Prognosis and prognostic research: developing a prognostic model. Bmj. 2009 Mar 31;338.
-[12][@steyerberg2001application]  Steyerberg EW, Eijkemans MJ, Habbema JD. Application of shrinkage techniques in logistic regression analysis: a case study. Statistica Neerlandica. 2001 Mar;55(1):76-88.
-[13][@moons2012risk]  Moons KG, Kengne AP, Grobbee DE, Royston P, Vergouwe Y, Altman DG, Woodward M. Risk prediction models: II. External validation, model updating, and impact assessment. Heart. 2012 May 1;98(9):691-8.
-[14][@moons2009prognosis]  Moons KG, Altman DG, Vergouwe Y, Royston P. Prognosis and prognostic research: application and impact of prognostic models in clinical practice. Bmj. 2009 Jun 4;338:b606.
-**obs bad reference, similar to reference 2**
-[15][@eckart2019combination]  Eckart A, Hauser SI, Kutz A, Haubitz S, Hausfater P, Amin D, Amin A, Huber A, Mueller B, Schuetz P. Combination of the National Early Warning Score (NEWS) and inflammatory biomarkers for early risk stratification in emergency department patients: results of a multinational, observational study. BMJ open. 2019 Jan 1;9(1):e024636.
-[16][@harrell2015regression]  Harrell Jr FE. Regression modeling strategies: with applications to linear models, logistic and ordinal regression, and survival analysis. Springer; 2015 Aug 14.
-[17][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-**obs selfmade reference in cite.bib**
-[18][@python]  Python [internet]. Python; [cited 2020-09-20]. Available from: https://www.python.org/
-**obs selfmade reference in cite.bib**
-[19][@logisticregression]  Scikit-learn, sklearn.linear_model.LogisticRegression [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-**obs selfmade reference in cite.bib**
+[1][@steyerberg2013prognosis]   Steyerberg EW, Moons KG, van der Windt DA, Hayden JA, Perel P, Schroter S, Riley RD, Hemingway H, Altman DG, PROGRESS Group. Prognosis Research Strategy (PROGRESS) 3: prognostic model research. PLoS Med. 2013 Feb 5;10(2):e1001381.  
+[2][@moons2009prognosis]   Moons KG, Royston P, Vergouwe Y, Grobbee DE, Altman DG. Prognosis and prognostic research: what, why, and how?. Bmj. 2009 Feb 23;338:b375.  
+[3][@collins2015transparent]   Collins GS, Reitsma JB, Altman DG, Moons KG. Transparent Reporting of a Multivariable Prediction Model for Individual Prognosis or Diagnosis (TRIPOD) The TRIPOD Statement. Circulation. 2015 Jan 13;131(2):211-9.  
+[4][@riley2013prognosis]   Riley RD, Hayden JA, Steyerberg EW, Moons KG, Abrams K, Kyzas PA, Malats N, Briggs A, Schroter S, Altman DG, Hemingway H. Prognosis Research Strategy (PROGRESS) 2: prognostic factor research. PLoS Med. 2013 Feb 5;10(2):e1001380.  
+[5][@bookforreference1]   Steyerberg EW. Clinical prediction models: a practical approach to development, validation, and updating. Springer, 2009.  
+**obs selfmade reference in cite.bib**  
+[6][@dorresteijn2011estimating]   Dorresteijn JA, Visseren FL, Ridker PM, Wassink AM, Paynter NP, Steyerberg EW, van der Graaf Y, Cook NR. Estimating treatment effects for individual patients based on the results of randomised clinical trials. Bmj. 2011 Oct 3;343:d5888.  
+[7][@hayward2006multivariable]   Hayward RA, Kent DM, Vijan S, Hofer TP. Multivariable risk prediction can greatly enhance the statistical power of clinical trial subgroup analysis. BMC medical research methodology. 2006 Dec 1;6(1):18.  
+[8][@stiell1992study]   Stiell IG, Greenberg GH, McKnight RD, Nair RC, McDowell I, Worthington JR. A study to develop clinical decision rules for the use of radiography in acute ankle injuries. Annals of emergency medicine. 1992 Apr 1;21(4):384-90.  
+[9][@lip2010refining]   Lip GY, Nieuwlaat R, Pisters R, Lane DA, Crijns HJ. Refining clinical risk stratification for predicting stroke and thromboembolism in atrial fibrillation using a novel risk factor-based approach: the euro heart survey on atrial fibrillation. Chest. 2010 Feb 1;137(2):263-72.  
+[10][@anderson1991cardiovascular]  Anderson KM, Odell PM, Wilson PW, Kannel WB. Cardiovascular disease risk profiles. American heart journal. 1991 Jan 1;121(1):293-8.  
+[11][@royston2009prognosis]  Royston P, Moons KG, Altman DG, Vergouwe Y. Prognosis and prognostic research: developing a prognostic model. Bmj. 2009 Mar 31;338.  
+[12][@steyerberg2001application]  Steyerberg EW, Eijkemans MJ, Habbema JD. Application of shrinkage techniques in logistic regression analysis: a case study. Statistica Neerlandica. 2001 Mar;55(1):76-88.  
+[13][@moons2012risk]  Moons KG, Kengne AP, Grobbee DE, Royston P, Vergouwe Y, Altman DG, Woodward M. Risk prediction models: II. External validation, model updating, and impact assessment. Heart. 2012 May 1;98(9):691-8.  
+[14][@moons2009prognosis]  Moons KG, Altman DG, Vergouwe Y, Royston P. Prognosis and prognostic research: application and impact of prognostic models in clinical practice. Bmj. 2009 Jun 4;338:b606.  
+**obs bad reference, similar to reference 2**  
+[15][@eckart2019combination]  Eckart A, Hauser SI, Kutz A, Haubitz S, Hausfater P, Amin D, Amin A, Huber A, Mueller B, Schuetz P. Combination of the National Early Warning Score (NEWS) and inflammatory biomarkers for early risk stratification in emergency department patients: results of a multinational, observational study. BMJ open. 2019 Jan 1;9(1):e024636.  
+[16][@harrell2015regression]  Harrell Jr FE. Regression modeling strategies: with applications to linear models, logistic and ordinal regression, and survival analysis. Springer; 2015 Aug 14.  
+[17][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html  
+**obs selfmade reference in cite.bib**  
+[18][@python]  Python [internet]. Python; [cited 2020-09-20]. Available from: https://www.python.org/  
+**obs selfmade reference in cite.bib**  
+[19][@logisticregression]  Scikit-learn, sklearn.linear_model.LogisticRegression [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html  
+**obs selfmade reference in cite.bib**  
 
