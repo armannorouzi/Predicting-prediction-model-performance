@@ -6,9 +6,10 @@ title: Code
 ## Week 1  
 #### importing data set as dataframe to python  
 import pandas as pd  
+df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')  
 
 #### Removing NAN values from dataframe
-df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')  
+df = df.dropna()
 
 #### splitting dataframe based on country where the participant was registered  
 df_USA = df[df['country'] == 'USA']  
