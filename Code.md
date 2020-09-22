@@ -1,32 +1,28 @@
----
-title: Code
----
-# All code is written in python with IDE Pycharm.
+#### import library
 
-## Week 1  
-#### importing data set as dataframe to python  
-import pandas as pd  
-df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')  
+import numpy as np
+import pandas as pd
 
-#### Removing NAN values from dataframe
+#### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python
+df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')
 df = df.dropna()
 
-### adding NEWS value 
-sample = df  
-listNEWSvalue = []  
-i = 0  
-f = 0  
-while i < len(sample):  
-    if sample['resp_rate'].iloc[i] <= 8:  
-        f += 3  
-    elif sample['resp_rate'].iloc[i] <= 11:  
-        f += 1  
-    elif sample['resp_rate'].iloc[i] <= 20:  
-        f += 0  
-    elif sample['resp_rate'].iloc[i] <= 24:  
-        f += 2  
-    elif sample['resp_rate'].iloc[i] >= 25:  
-        f += 3  
+#### Adjusting NEWS parameters - oxygen therapy as NEWS value
+sample = df
+listNEWSvalue = []
+i = 0
+f = 0
+while i < len(sample):
+    if sample['resp_rate'].iloc[i] <= 8:
+        f += 3
+    elif sample['resp_rate'].iloc[i] <= 11:
+        f += 1
+    elif sample['resp_rate'].iloc[i] <= 20:
+        f += 0
+    elif sample['resp_rate'].iloc[i] <= 24:
+        f += 2
+    elif sample['resp_rate'].iloc[i] >= 25:
+        f += 3
 
     if sample['SpO2'].iloc[i] <= 91:
         f += 3
@@ -87,7 +83,9 @@ while i < len(sample):
 
 df['NEWS'] = listNEWSvalue
 
-### turning NEWS value to dummies of high, moderate and low
+#### Adjustning NEWS value to dummies as 'Low', 'Moderate' and 'High
+
+print(listNEWSvalue)
 listNEWS = []
 for i in listNEWSvalue:
     if i <= 4:
@@ -101,21 +99,3 @@ df['NEWS-S'] = listNEWS
 
 dummy = pd.get_dummies(df['NEWS-S'])
 df = df.merge(dummy, left_index=True, right_index=True)
-        
-
-#### splitting dataframe based on country where the participant was registered  
-df_USA = df[df['country'] == 'USA']  
-df_France = df[df['country'] == 'France']  
-df_Switzerland = df[df['country'] == 'Switzerland']  
-
-## Week 2
-
-
-
-
-## Week 3
-### Specifying X and y value  
-feature_cols = ['resp_rate', 'confusion', 'BPS', 'HR', 'temp', 'SpO2', 'LOS', 'PCT', 'MR-proADM']  
-X = df_USA[feature_cols]  
-y = df_USA['ICU']  
-
