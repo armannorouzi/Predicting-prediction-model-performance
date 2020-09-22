@@ -1,5 +1,8 @@
-#### import library
+# All code written in python with IDE pycharm.
+#### open raw format of this md file in order to see code more clearly...
 
+
+#### import library
 import numpy as np
 import pandas as pd
 
@@ -84,8 +87,6 @@ while i < len(sample):
 df['NEWS'] = listNEWSvalue
 
 #### Adjustning NEWS value to dummies as 'Low', 'Moderate' and 'High
-
-print(listNEWSvalue)
 listNEWS = []
 for i in listNEWSvalue:
     if i <= 4:
@@ -99,3 +100,8 @@ df['NEWS-S'] = listNEWS
 
 dummy = pd.get_dummies(df['NEWS-S'])
 df = df.merge(dummy, left_index=True, right_index=True)
+
+#### Splitting data based on country of origin
+df_USA = df[df['country'] == 'USA']
+df_France = df[df['country'] == 'France']
+df_Switzerland = df[df['country'] == 'Switzerland']
