@@ -8,7 +8,7 @@ import pandas as pd
 df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')
 df = df.dropna()
 
-#### Adjusting NEWS parameters - oxygen therapy as NEWS value
+#### Adding NEWS parameters minus 2 points as for lack of information on oxygen therapy
 sample = df
 listNEWSvalue = []
 i = 0
@@ -84,7 +84,7 @@ while i < len(sample):
 
 df['NEWS'] = listNEWSvalue
 
-#### Adjustning NEWS value to dummies as 'Low', 'Moderate' and 'High
+#### Adjustning NEWS value to dummies as 'Low' <= 4 NEWS points, 'Moderate' 6-4 NEWS points and 'High' >= 7 points
 listNEWS = []
 for i in listNEWSvalue:
     if i <= 4:
