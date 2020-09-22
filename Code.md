@@ -1,6 +1,4 @@
-# All code written in python with IDE pycharm.
-#### open raw format of this md file in order to see code more clearly...
-
+# All code written in python with IDE pycharm. Open raw format of this md file in order to see code more clearly...
 
 #### import library
 import numpy as np
