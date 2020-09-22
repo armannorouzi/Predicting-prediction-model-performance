@@ -12,10 +12,10 @@ df = pd.read_excel(r'C:\Users\Arman\Downloads\NEWS_datafile.xls')
 df = df.dropna()
 
 ### adding NEWS value 
-sample = df
-listNEWSvalue = []
-i = 0
-f = 0
+sample = df  
+listNEWSvalue = []  
+i = 0  
+f = 0  
 while i < len(sample):
     if sample['resp_rate'].iloc[i] <= 8:
         f += 3
