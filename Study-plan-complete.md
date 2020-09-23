@@ -63,10 +63,7 @@ The sequence of analysis to conduct this study is dataset splitting, development
 The publicly available register that has been previously mentioned in the study design will be divided into three separate datasets based on which country the data was collected from.
 
 ### Development sample and validation sample splitting  
-Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (18). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
- 
-### Sequence of analysis  
-Analysis in this study is all performed in the programming language python (18). The sequence of analysis to conduct this study is model development, model validation, propensity method model development and model comparison. 
+Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (18). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.  
 
 ### Model development 
 A prediction model is developed using the development sample in each dataset by using logistic regression implemented in the scikit-learn package in python (19). To avoid overfitting the model we will utilize bootstrapping to estimate a linear shrinkage factor that will be applied to the model coefficients (12). The shrunk model will then be used to calculate the accuracy of the model within the development sample.
