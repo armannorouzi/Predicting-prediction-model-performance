@@ -54,7 +54,7 @@ To account for missing data in our study we will carry out a complete case analy
 
 ## Statistical methods  
 ### Statistical analysis  
-Analysis in this study is all performed in the programming language python (17). Two-tailed tests are used and p-values of <0,05 are considered significant. To assess the difference in patient characteristics and model predictors between the participants being referred to the ICU and those that did not, we will use Student’s t-test for numerical variables and one sample proportion test for dichotomous variables. To assess the difference in accuracy between the new method that is developed and the current way of validating a prediction model with outcome data, we will use Student’s t-test.  
+Analysis in this study is all performed in the programming language python (17). Two-tailed tests are used and p-values of <0,05 are considered significant. To assess the difference in patient characteristics and model predictors between the participants being referred to the ICU and those that did not, we will use Student’s t-test for numerical variables and one sample proportion test for dichotomous variables. To assess the difference in accuracy between the new method that is developed and the current way of calculating the accuracy of a prediction model within a transfer sample with outcome data, we will use Student’s t-test.  
 
 ### Sequence of analysis  
 The sequence of analysis to conduct this study is dataset splitting, development sample and validation sample splitting, model development, model validation, propensity method model development and model comparison.  
