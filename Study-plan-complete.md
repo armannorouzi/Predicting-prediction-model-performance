@@ -11,7 +11,7 @@ In medicine, healthcare professionals are confronted daily with a wide range of 
 
 The predictions that are made with a prediction model are generally based on multiple variables, and the outcome could either be a disease (diagnostic model) or an event that will occur in the future (prognostic model) (3, 4). In a diagnostic model, the predictions can be used to inform patients that their symptoms are not caused by a serious disease, to refer the patients for further testing and to initiate treatment (3). In a prognostic model, the predictions made can be used to choose between therapeutic options and to plan lifestyle changes within the period that has been observed (2, 5). This type of prediction could also be utilized to risk-stratify patients in therapeutic clinical trials (6, 7). 
 
-There are several well-known clinical prediction models that are daily being used within healthcare. The Ottawa Ankle Rules, CHA2DS2-VASc score and the Framingham Risk Score are just a few examples (8, 9, 10). To implement such models in healthcare, a few steps are required. The first step is to conduct a model development study (11). In these studies, a logistic regression model is developed by using a data set, defined as the development sample, that includes both predictor and outcome data from the development setting (11). When the model is developed, it usually has a tendency to be optimistic when estimating performance within the development sample and needs to therefore be quantified for optimism by internal validation techniques (3). The quantified optimism can thereafter be adjusted for by applying shrinkage or penalisation to the original model (12)
+There are several well-known clinical prediction models that are daily being used within healthcare. The Ottawa Ankle Rules, CHA2DS2-VASc score and the Framingham Risk Score are just a few examples (8, 9, 10). To implement such models in healthcare, a few steps are required. The first step is to conduct a model development study (11). In these studies, a logistic regression model is developed by using a dataset, defined as the development sample, that includes both predictor and outcome data from the development setting (11). When the model is developed, it usually has a tendency to be optimistic when estimating performance within the development sample and needs to therefore be quantified for optimism by internal validation techniques (3). The quantified optimism can thereafter be adjusted for by applying shrinkage or penalisation to the original model (12)
 
 The second step is to conduct a validation study with or without model updating (13). 
 During this step, the prediction model is tested in a transfer setting by utilizing a validation sample which contains new individuals that are similar but differ than those used to develop the model (13). This is done because developed and internally validated prediction models generally perform worse when they are introduced to a new set of individuals (13). If the performance of the model is poor within the validation sample, the model is of no use (14). However, adjustments could be made accordingly with the data collected from the validation sample, which is also more preferable than developing a new prediction model from scratch (13)
@@ -72,26 +72,26 @@ A prediction model is developed using the development sample in each dataset by 
 To assess the performance of the model in another setting, the prediction models that have been developed in the previous stage will be used to predict the outcome within the validation sample.
 
 ### Propensity method model development  
-During this step, in each data set the data from the development and validation sample are pooled into one sample. This aggregated sample is then used to train a propensity model - also using logistic regression - to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. The performance of the prediction model is then estimated in this segment. We use this performance estimate as the prediction of the true model performance in the transfer setting.
+During this step, in each dataset the data from the development and validation sample are pooled into one sample. This aggregated sample is then used to train a propensity model - also using logistic regression - to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. The performance of the prediction model is then estimated in this segment. We use this performance estimate as the prediction of the true model performance in the transfer setting.
 
 ### Model comparison  
 Finally, the difference in accuracy in the model development and model validation is calculated and the same is done between the accuracy in model development and propensity method model development. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
 
 ## Ethical considerations
 ### Principle of autonomy  
-The data used in the original  observational study has been approved by the institutional review boards of the three hospitals and has since been published for general use. Therefore the respect of autonomy is upheld.
+The research data used in this study has been made freely reusable and citable in Dryad Digital Repository (20). Therefore the principle of autonomy is upheld due to there not being any requirement for informed consent.
 
 ### Principle of beneficence  
-This study will attempt to act in the best interest of future analytical research and indirectly patients, in an attempt to find new ways of predicting prediction model performance in a transfer setting while only utilizing predictor data.
+This study will attempt to act in the best interest of future analytical research and indirectly patients, by developing and testing a new method for predicting prediction model performance in a transfer setting while only utilizing predictor data.
 
 ### Principle of nonmaleficence  
-The attempts made in this study will be made without the intention of harm, intentionally or unintentionally. Due to the database being depersonalized and publicized there is no way of identification leakage from this study.
+The method developed in this study will be made without the intention of harm, intentionally or unintentionally. There is no risk for patient identification leakage due the data already being depersonalized.
 
 ### Principle of Justice  
-Because this study is analytical, the principle of justice does not prevail. The data in the study will be treated equally.
+Due to this study being analytical, the principle of justice does not prevail. However, the data in the study will be treated equally.
 
 ### Ethical permit
-Due to this study being an analytical study based on a public database the need for an ethical permit is not required. 
+Because of this study being an analytical study based on a public database the need for an ethical permit is not required. 
 
 # References
 [1][@steyerberg2013prognosis]   Steyerberg EW, Moons KG, van der Windt DA, Hayden JA, Perel P, Schroter S, Riley RD, Hemingway H, Altman DG, PROGRESS Group. Prognosis Research Strategy (PROGRESS) 3: prognostic model research. PLoS Med. 2013 Feb 5;10(2):e1001381.  
@@ -118,4 +118,4 @@ Due to this study being an analytical study based on a public database the need 
 **obs selfmade reference in cite.bib**  
 [19][@logisticregression]  Scikit-learn, sklearn.linear_model.LogisticRegression [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html  
 **obs selfmade reference in cite.bib**  
-
+[20] DRYAD [internet]. DRYAD; [cited 2020-09-23]. Available from: https://datadryad.org/stash/
