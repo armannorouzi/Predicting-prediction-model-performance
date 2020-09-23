@@ -10,7 +10,7 @@
 - [x] Study plan drafted and uploaded to repository  
 
 ### 15 Sept
-- Revise study plan based on feedback 
+- [x] Revise study plan based on feedback 
 
 ### 22 Sept
 - First code written that imports and cleans the data  
