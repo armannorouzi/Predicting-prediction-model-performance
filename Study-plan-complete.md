@@ -14,8 +14,7 @@ The predictions that are made with a prediction model are generally based on mul
 
 There are several well-known clinical prediction models that are daily being used within healthcare. The Ottawa Ankle Rules, CHA2DS2-VASc score and the Framingham Risk Score are just a few examples (8, 9, 10). To implement such models in healthcare, a few steps are required. The first step is to conduct a model development study (11). In these studies, a logistic regression model is developed by using a dataset, defined as the development sample, that includes both predictor and outcome data from the development setting (11). When the model is developed, it usually has a tendency to be optimistic when estimating performance within the development sample and needs to therefore be quantified for optimism by internal validation techniques (3). The quantified optimism can thereafter be adjusted for by applying shrinkage or penalisation to the original model (12)
 
-The second step is to conduct a validation study with or without model updating (13). 
-During this step, the prediction model is tested in a transfer setting by utilizing a validation sample which contains new individuals that are similar but differ than those used to develop the model (13). This is done because developed and internally validated prediction models generally perform worse when they are introduced to a new set of individuals (13). If the performance of the model is poor within the validation sample, the model is of no use (14). However, adjustments could be made accordingly with the data collected from the validation sample, which is also more preferable than developing a new prediction model from scratch (13)
+The second step is to conduct a validation study with or without model updating (13). During this step, the prediction model is tested in a transfer setting by utilizing a validation sample which contains new individuals that are similar but differ than those used to develop the model (13). This is done because developed and internally validated prediction models generally perform worse when they are introduced to a new set of individuals (13). If the performance of the model is poor within the validation sample, the model is of no use (14). However, adjustments could be made accordingly with the data collected from the validation sample, which is also more preferable than developing a new prediction model from scratch (13)
 
 The final step is to perform an impact study (13, 14). During this step the impact of the prediction model is quantified and compared to not using the model, Ideally in a randomised trial, in variables such as behavioural changes in patients and healthcare professionals, patient health outcomes or cost-effectiveness of care (13, 14). If the impact of the prediction model is poor, it is of no use(14).
 
@@ -25,70 +24,72 @@ It would therefore be desirable to have a method that can estimate the performan
 
 At present, no such methods exist. Therefore, the aim of this study is to develop and test a new method for estimating the performance of prediction models in a transfer setting while only utilizing predictor data. The method will focus on identifying similarities in the development sample and the validation sample in order to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. This segment is then used to predict the true model performance in the transfer setting.
 
-Our hypothesis is that our method of estimating prediction model performance within a transfer setting by only utilizing predictor data, will be as good as current methods of calculating the performance within the transfer setting when outcome data is utilized. This hypothesis is based on the fact that the segment created by the method is more similar to the validation sample and should therefore be able to constitute as such but with available outcome data.  
+Our hypothesis is that our method of estimating prediction model performance within a transfer setting by only utilizing predictor data, will be as good as current methods of calculating the performance within the transfer setting when outcome data is utilized. This hypothesis is based on the fact that the segment created by the method is more similar to the validation sample and should therefore be able to constitute as such but with available outcome data.
 
 # Aim
-The aim of this study is to develop and test a method for predicting prediction model performance in a transfer setting while only utilizing predictor data.   
+The aim of this study is to develop and test a method for predicting prediction model performance in a transfer setting while only utilizing predictor data.
 
 # Methods
 ## Study design
-We will conduct an analytical registry-based study. The database used for analysis has been made publicly available by the multinational, observational study by Eckert A et al, 2019 (15).  
+We will conduct an analytical registry-based study. The database used for analysis has been made publicly available by the multinational, observational study by Eckert A et al, 2019 (15).
 
 ## Participants
-The patients enrolled in the public database were all seeking emergency department (ED) care between March 2013 and October 2014, within three tertiary care centers located in USA (Clearwater Hospital), France (Hôspital de la Salpêtrière) and Switzerland (Kontonsspital Aarau). To be included in the registry an initial blood sample was required and the patients could not be paediatric or surgical patients.  
+The patients enrolled in the public database were all seeking emergency department (ED) care between March 2013 and October 2014, within three tertiary care centers located in USA (Clearwater Hospital), France (Hôspital de la Salpêtrière) and Switzerland (Kontonsspital Aarau). To be included in the registry an initial blood sample was required and the patients could not be paediatric or surgical patients.
 
 ## Sample Size
-The final sample size arrived at in this study will include the total number of participants with complete data from the previously mentioned database in study design. Complete data is defined as having no missing data in variables that are used to develop and test the method.  
+The final sample size arrived at in this study will include the total number of participants with complete data from the previously mentioned database in study design. Complete data is defined as having no missing data in variables that are used to develop and test the method.
 
 ## Variables
-### Model predictor  
+
+### Model predictors
 The predictor data used to estimate outcomes in our study are respiratory rate (RR), confusion, peripheral oxygen saturation (SpO2), systolic blood pressure (BPS), heart rate (HR), temperature, midregional-proadrenomedullin (MR-proADM) and procalcitonin (PCT). The methods used to measure the vital parameters were not specified in the original study. 
 
-### Model outcome  
-The outcome of this study is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.  
+### Model outcome
+The outcome of this study is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.
 
 ### Patient characteristics
 To describe the participants in the database we will report age, sex, diastolic blood pressure (BPD) length of stay (LOS) and discharge location.
 
 ## Missing data
-To account for missing data in our study we will carry out a complete case analysis because of only missing few observations (16).     
+To account for missing data in our study we will carry out a complete case analysis because of only missing few observations (16).
 
-## Statistical methods  
-### Statistical analysis  
-Analysis in this study is all performed in the programming language python (17). Two-tailed tests are used and p-values of <0,05 are considered significant. To assess the difference in patient characteristics and model predictors between the participants being referred to the ICU and those that did not, we will use Student’s t-test for numerical variables and one sample proportion test for dichotomous variables. To assess the difference in accuracy between the new method that is developed and the current way of calculating the accuracy of a prediction model within a transfer sample with outcome data, we will use Student’s t-test.  
+## Statistical methods
 
-### Sequence of analysis  
-The sequence of analysis to conduct this study is dataset splitting, development sample and validation sample splitting, model development, model validation, propensity method model development and model comparison.  
+### Statistical analysis
+All analyses in this study are performed in the programming language python (17). Two-tailed tests are used and p-values of <0,05 are considered significant. To assess the difference in patient characteristics and model predictors between the participants being referred to the ICU and those that did not, we will use Student’s t-test for numerical variables and one sample proportion test for dichotomous variables. To assess the difference in accuracy between the new method that is developed and the current way of calculating the accuracy of a prediction model within a transfer sample with outcome data, we will use Student’s t-test.
 
-### Dataset splitting  
-The publicly available register that has been previously mentioned in the study design will be divided into three separate datasets based on which country the data was collected from.
+### Sequence of analysis
+The sequence of analysis to conduct this study is dataset splitting, development sample and validation sample splitting, model development, model validation, propensity method model development and model comparison.
 
-### Development sample and validation sample splitting  
-Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (18). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.  
+### Dataset splitting
+The publicly available dataset will be divided into three separate datasets based on which country the data was collected from.
+
+### Development sample and validation sample splitting
+Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (18). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
 
 ### Model development 
 A prediction model is developed using the development sample in each dataset by using logistic regression implemented in the scikit-learn package in python (19). To avoid overfitting the model we will utilize bootstrapping to estimate a linear shrinkage factor that will be applied to the model coefficients (12). The shrunk model will then be used to calculate the accuracy of the model within the development sample.
 
-### Model validation  
+### Model validation
 To assess the performance of the model in another setting, the prediction models that have been developed in the previous stage will be used to predict the outcome within the validation sample.
 
-### Propensity method model development  
+### Propensity method model development
 During this step, in each dataset the data from the development and validation sample are pooled into one sample. This aggregated sample is then used to train a propensity model - also using logistic regression - to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. The performance of the prediction model is then estimated in this segment. We use this performance estimate as the prediction of the true model performance in the transfer setting.
 
-### Model comparison  
+### Model comparison
 Finally, the difference in accuracy in the model development and model validation is calculated and the same is done between the accuracy in model development and propensity method model development. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
 
 ## Ethical considerations
-### Principle of autonomy  
+### Principle of autonomy
 The research data used in this study has been made freely reusable and citable in Dryad Digital Repository (20). Therefore the principle of autonomy is upheld due to there not being any requirement for informed consent.
 
-### Principle of beneficence  
+### Principle of beneficence
 This study will attempt to act in the best interest of future analytical research and indirectly patients, by developing and testing a new method for predicting prediction model performance in a transfer setting while only utilizing predictor data.
 
-### Principle of nonmaleficence  
+### Principle of nonmaleficence
 The method developed in this study will be made without the intention of harm, intentionally or unintentionally. There is no risk for patient identification leakage due the data already being depersonalized.
 
-### Principle of Justice  
+### Principle of Justice
 Due to this study being analytical, the principle of justice does not prevail. However, the data in the study will be treated equally.
 
 ### Ethical permit
