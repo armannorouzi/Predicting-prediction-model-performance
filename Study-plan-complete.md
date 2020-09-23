@@ -50,7 +50,7 @@ The outcome of this study is referral to the intensive care unit (ICU) within th
 To describe the participants in the database we will report age, sex, diastolic blood pressure (BPD) length of stay (LOS) and discharge location.
 
 ## Missing data
-To account for missing data in our study we will carry out a complete case analysis because of only missing a few observations (16).     
+To account for missing data in our study we will carry out a complete case analysis because of only missing few observations (16).     
 
 ## Statistical methods  
 ### Statistical analysis  
@@ -115,9 +115,9 @@ Due to this study being an analytical study based on a public database the need 
 **obs bad reference, similar to reference 2**  
 [15][@eckart2019combination]  Eckart A, Hauser SI, Kutz A, Haubitz S, Hausfater P, Amin D, Amin A, Huber A, Mueller B, Schuetz P. Combination of the National Early Warning Score (NEWS) and inflammatory biomarkers for early risk stratification in emergency department patients: results of a multinational, observational study. BMJ open. 2019 Jan 1;9(1):e024636.  
 [16][@harrell2015regression]  Harrell Jr FE. Regression modeling strategies: with applications to linear models, logistic and ordinal regression, and survival analysis. Springer; 2015 Aug 14.  
-[17][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html  
+[18][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html  
 **obs selfmade reference in cite.bib**  
-[18][@python]  Python [internet]. Python; [cited 2020-09-20]. Available from: https://www.python.org/  
+[17][@python]  Python [internet]. Python; [cited 2020-09-20]. Available from: https://www.python.org/  
 **obs selfmade reference in cite.bib**  
 [19][@logisticregression]  Scikit-learn, sklearn.linear_model.LogisticRegression [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html  
 **obs selfmade reference in cite.bib**  
