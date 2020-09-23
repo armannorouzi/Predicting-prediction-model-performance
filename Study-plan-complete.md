@@ -24,10 +24,10 @@ It would therefore be desirable to have a method that can estimate the performan
 
 At present, no such methods exist. Therefore, the aim of this study is to develop and test a new method for estimating the performance of prediction models in a transfer setting while only utilizing predictor data. The method will focus on identifying similarities in the development sample and the validation sample in order to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. This segment is then used to predict the true model performance in the transfer setting.
 
-Our hypothesis is that the method will be able to make significant predictions. This hypothesis is based on the fact that the segment created by the method is more similar to the validation sample and should therefore be able to constitute as such but with available outcome data.
+Our hypothesis is that our method of estimating prediction model performance within a transfer setting by only utilizing predictor data, will be as good as current methods of calculating the performance within the transfer setting when outcome data is utilized. This hypothesis is based on the fact that the segment created by the method is more similar to the validation sample and should therefore be able to constitute as such but with available outcome data.  
 
 # Aim
-The aim of this study is to develop and test a method for predicting prediction model performance in a transfer setting while only utilizing predictor data, in an attempt to simplify the implementation of prediction models within healthcare. 
+The aim of this study is to develop and test a method for predicting prediction model performance in a transfer setting while only utilizing predictor data.   
 
 # Methods
 ## Study design
@@ -37,24 +37,33 @@ We will conduct an analytical registry-based study. The database used for analys
 The patients enrolled in the public database were all seeking emergency department (ED) care between March 2013 and October 2014, within three tertiary care centers located in USA (Clearwater Hospital), France (Hôspital de la Salpêtrière) and Switzerland (Kontonsspital Aarau). To be included in the registry an initial blood sample was required and the patients could not be paediatric or surgical patients.  
 
 ## Sample Size
-The sample size arrived at in this study includes the total amount of participants (N=1303) available in the previously mentioned database in study design. These 1303 participants were selected from a total of 7132 participants by Eckert A et al, 2019, because of having a complete National Early Warning Score (NEWS) (15).  
+The final sample size arrived at in this study will include the total number of participants with complete data from the previously mentioned database in study design. Complete data is defined as having no missing data in variables that are used to develop and test the method.  
 
 ## Variables
 ### Model predictor  
-The predictor data used to estimate outcomes in our study are respiratory rate (RR), confusion, peripheral oxygen saturation (SpO2), systolic blood pressure (BPS), heart rate (HR), temperature, midregional-proadrenomedullin (MR-proADM) and procalcitonin (PCT). The methods used to measure the different vital parameters were not specified in the original study.
-  
+The predictor data used to estimate outcomes in our study are respiratory rate (RR), confusion, peripheral oxygen saturation (SpO2), systolic blood pressure (BPS), heart rate (HR), temperature, midregional-proadrenomedullin (MR-proADM) and procalcitonin (PCT). The methods used to measure the vital parameters were not specified in the original study. 
+
 ### Model outcome  
-The outcome of this study is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.
+The outcome of this study is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.  
+
+### Patient characteristics
+To describe the participants in the database we will report age, sex, diastolic blood pressure (BPD) length of stay (LOS) and discharge location.
 
 ## Missing data
-Because of our data set largely consisting of participants with complete data and therefore only having a few observations missing, we have decided to carry out a complete case analysis (16).   
+To account for missing data in our study we will carry out a complete case analysis because of only missing a few observations (16).     
 
-## Statistical methods
-### Dataset  
+## Statistical methods  
+### Statistical analysis  
+Analysis in this study is all performed in the programming language python (17). Two-tailed tests are used and p-values of <0,05 are considered significant. To assess the difference in patient characteristics and model predictors between the participants being referred to the ICU and those that did not, we will use Student’s t-test for numerical variables and one sample proportion test for dichotomous variables. To assess the difference in accuracy between the new method that is developed and the current way of validating a prediction model with outcome data, we will use Student’s t-test.  
+
+### Sequence of analysis  
+The sequence of analysis to conduct this study is dataset splitting, development sample and validation sample splitting, model development, model validation, propensity method model development and model comparison.  
+
+### Dataset splitting  
 The publicly available register that has been previously mentioned in the study design will be divided into three separate datasets based on which country the data was collected from.
 
-### Development sample and validation sample   
-Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (17). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
+### Development sample and validation sample splitting  
+Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (18). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
  
 ### Sequence of analysis  
 Analysis in this study is all performed in the programming language python (18). The sequence of analysis to conduct this study is model development, model validation, propensity method model development and model comparison. 
@@ -69,7 +78,7 @@ To assess the performance of the model in another setting, the prediction models
 During this step, in each data set the data from the development and validation sample are pooled into one sample. This aggregated sample is then used to train a propensity model - also using logistic regression - to distinguish which data belongs to which sample. Observations from the development sample that are misclassified as validation observations will be used to form a separate segment. The performance of the prediction model is then estimated in this segment. We use this performance estimate as the prediction of the true model performance in the transfer setting.
 
 ### Model comparison  
-Finally, the difference in accuracy in the model development and model validation is calculated and the same is done between the accuracy in model development and propensity method model development. To evaluate how well the new method is at estimating the true model performance in the transfer setting, we calculate the difference between the differences. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
+Finally, the difference in accuracy in the model development and model validation is calculated and the same is done between the accuracy in model development and propensity method model development. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
 
 ## Ethical considerations
 ### Principle of autonomy  
