@@ -42,13 +42,13 @@
 ### 15 Dec - 22 Dec (Week 16)
 - Revised final project and upload second version to repository
 
-### 22 Dec - 27 Dec (Week 17)
-- "Seminar version" of project **Deadline** 28/12, 09:00.
-
-### 29 Dec (End of Week 17)
+### 22 Dec - 29 Dec (Week 17)
 - Revised second version of final project
 
-### 7-8-11 Jan
+### 28 Dec (End of Week 17)
+- "Seminar version" of project **Deadline** 28/12, 09:00.
+
+### 7-8-11 Jan (Week 19)
 - Examinationseminars: Presentation and Opposition
 
 ### 29 Dec - 14 Jan (Week 18-19)
@@ -56,7 +56,7 @@
 - True final version of uploaded to repository and submitted in canvas
 
 ### 15 Jan (End of week 19)
-- Final version of project **Deadline** 15/01/2020, 15:00.
+- True final version of project **Deadline** 15/01/2020, 15:00.
 
-### 17 Jan
+### 17 Jan (Week 20)
 - End of term
