@@ -111,10 +111,10 @@ Because of this study being an analytical study based on a public database, the 
 [15][@moons2009prognosis]  Moons KG, Altman DG, Vergouwe Y, Royston P. Prognosis and prognostic research: application and impact of prognostic models in clinical practice. Bmj. 2009 Jun 4;338:b606.  
 **obs bad reference, similar to reference 2**  
 [16][@eckart2019combination]  Eckart A, Hauser SI, Kutz A, Haubitz S, Hausfater P, Amin D, Amin A, Huber A, Mueller B, Schuetz P. Combination of the National Early Warning Score (NEWS) and inflammatory biomarkers for early risk stratification in emergency department patients: results of a multinational, observational study. BMJ open. 2019 Jan 1;9(1):e024636.  
-[17][@harrell2015regression]  Harrell Jr FE. Regression modeling strategies: with applications to linear models, logistic and ordinal regression, and survival analysis. Springer; 2015 Aug 14.  
-[19][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html  
-**obs selfmade reference in cite.bib**  
+[17][@harrell2015regression]  Harrell Jr FE. Regression modeling strategies: with applications to linear models, logistic and ordinal regression, and survival analysis. Springer; 2015 Aug 14.    
 [18][@python]  Python [internet]. Python; [cited 2020-09-20]. Available from: https://www.python.org/  
+**obs selfmade reference in cite.bib**  
+[19][@traintestsplit]  Scikit-learn, sklearn.model_selection.train_test_split [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html  
 **obs selfmade reference in cite.bib**  
 [20][@logisticregression]  Scikit-learn, sklearn.linear_model.LogisticRegression [internet]. Scikit-learn; [cited 2020-09-20]. Available from: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html  
 **obs selfmade reference in cite.bib**  
