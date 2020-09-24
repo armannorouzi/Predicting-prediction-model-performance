@@ -28,7 +28,7 @@
 - Code written that generates first set of preliminary results
 - Revised code based on feedback weekly
 
-### 10 Nov - 24 Nov (week 11-12)
+### 10 Nov - 24 Nov (Week 11-12)
 - Results section drafted and uploaded to repository
 - Revised code based on feedback
 
@@ -45,7 +45,7 @@
 ### 22 Dec - 27 Dec (Week 17)
 - "Seminar version" of project **Deadline** 28/12, 09:00.
 
-### 29 Dec (end of week 17)
+### 29 Dec (End of Week 17)
 - Revised second version of final project
 
 ### 7-8-11 Jan
