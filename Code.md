@@ -1,4 +1,4 @@
-# All code written in python, IDE pycharm
+# All code written in python, IDE pycharm. Open in raw format to access the code.
 
 ### import library
 import numpy as np
