@@ -80,7 +80,7 @@ The penalized prediction model is then used to estimate the outcome within the s
 ### Model comparison  (måste ändra innehåll)
 Finally, the difference in accuracy in the model development and model validation is calculated and the same is done between the accuracy in model development and propensity method model development. Both the accuracy and the differences are bootstrapped to estimate 95% confidence intervals (CI). The bootstrap procedures used will bootstrap 1000 samples with replacements based on the same size as the original samples.
 
-#### Development sample and validation sample splitting  (ska denna vara kvar? förstår inte direkt inte varför vi gör detta steg)
+### Development sample and validation sample splitting  (ska denna vara kvar? förstår inte direkt inte varför vi gör detta steg)
 Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (21). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
 
 ## Ethical considerations
