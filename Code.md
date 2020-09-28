@@ -5,14 +5,59 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
-### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python
+### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python, not dropping NAN values due to it removing rows with complete predictor and outcome data
 df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
-df = df.dropna()
 
 ### Splitting data based on country of origin
 df_USA = df[df['country'] == 'USA']
 df_France = df[df['country'] == 'France']
 df_Switzerland = df[df['country'] == 'Switzerland']
+
+### Creating table of characteristics in pandas dataframe as 'df_pc'
+df_pc['Total dataset'] = [len(df),
+                          str( ),
+                          str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
+                          str(df.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['gender']).count()['hospital'].iloc[1] / len(df) * 100, 2)) + ')',
+                          str( ),
+                          str(math.trunc(df.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df.describe()['BPS'].iloc[6])) + ')',
+                          str(df.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['confusion']).count()['hospital'].iloc[1] / df.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
+                          str(math.trunc(df.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df.describe()['HR'].iloc[6])) + ')',
+                          str(math.trunc(df.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df.describe()['resp_rate'].iloc[6])) + ')',
+                          str(math.trunc(df.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df.describe()['SpO2'].iloc[6])) + ')',
+                          str(round(df.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df.describe()['temp'].iloc[6], 1)) + ')']
+df_pc['USA dataset'] = [len(df_USA),
+                          str( ),
+                          str(math.trunc(df_USA.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['age'].iloc[6])) + ')',
+                          str(df_USA.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_USA.groupby(['gender']).count()['hospital'].iloc[1] / len(df_USA) * 100, 2)) + ')',
+                          str( ),
+                          str(math.trunc(df_USA.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['BPS'].iloc[6])) + ')',
+                          str(df_USA.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_USA.groupby(['confusion']).count()['hospital'].iloc[1] / df_USA.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
+                          str(math.trunc(df_USA.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['HR'].iloc[6])) + ')',
+                          str(math.trunc(df_USA.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[6])) + ')',
+                          str(math.trunc(df_USA.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['SpO2'].iloc[6])) + ')',
+                          str(round(df_USA.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_USA.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_USA.describe()['temp'].iloc[6], 1)) + ')']
+df_pc['France dataset'] = [len(df_France),
+                          str( ),
+                          str(math.trunc(df_France.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['age'].iloc[6])) + ')',
+                          str(df_France.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_France.groupby(['gender']).count()['hospital'].iloc[1] / len(df_France) * 100, 2)) + ')',
+                          str( ),
+                          str(math.trunc(df_France.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['BPS'].iloc[6])) + ')',
+                          str(df_France.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_France.groupby(['confusion']).count()['hospital'].iloc[1] / df_France.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
+                          str(math.trunc(df_France.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['HR'].iloc[6])) + ')',
+                          str(math.trunc(df_France.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['resp_rate'].iloc[6])) + ')',
+                          str(math.trunc(df_France.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['SpO2'].iloc[6])) + ')',
+                          str(round(df_France.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_France.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_France.describe()['temp'].iloc[6], 1)) + ')']
+df_pc['Switzerland dataset'] = [len(df_Switzerland),
+                          str( ),
+                          str(math.trunc(df_Switzerland.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['age'].iloc[6])) + ')',
+                          str(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1] / len(df_Switzerland) * 100, 2)) + ')',
+                          str( ),
+                          str(math.trunc(df_Switzerland.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['BPS'].iloc[6])) + ')',
+                          str(df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[1] / df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
+                          str(math.trunc(df_Switzerland.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['HR'].iloc[6])) + ')',
+                          str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[6])) + ')',
+                          str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[6])) + ')',
+                          str(round(df_Switzerland.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_Switzerland.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_Switzerland.describe()['temp'].iloc[6], 1)) + ')']
 
 ### Assigning which data is development setting 'dsetting' and which data is transfer setting = 'tsetting'
 dsetting = df_France
