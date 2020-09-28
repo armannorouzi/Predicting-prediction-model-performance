@@ -18,9 +18,9 @@ df_Switzerland = df[df['country'] == 'Switzerland']
 df_pc = pd.DataFrame()
 df_pc[''] = ['Number of patients, n(%)', 'Sociodemographics', 'Age, median (quartiles)', 'Male gender, n(%)', 'Vital signs, median (quartiles)',
               'Blood pressure systolic (mm Hg)', 'Confusion, n(%)', 'Pulse (bpm)',
-              'Respiratory rate (per min)', '  SpO2 (%)', 'Temperature (°C)']
+              'Respiratory rate (per min)', 'SpO2 (%)', 'Temperature (°C)']
 
-df_pc['Total dataset'] = [len(df),
+df_pc['Total dataset'] = [str(len(df)),
                           str( ),
                           str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
                           str(df.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['gender']).count()['hospital'].iloc[1] / len(df) * 100, 2)) + ')',
@@ -31,7 +31,7 @@ df_pc['Total dataset'] = [len(df),
                           str(math.trunc(df.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df.describe()['resp_rate'].iloc[6])) + ')',
                           str(math.trunc(df.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df.describe()['SpO2'].iloc[6])) + ')',
                           str(round(df.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['USA dataset'] = [len(df_USA),
+df_pc['USA dataset'] = [str(len(df_USA)) + ' ' + '(' + str(round(len(df_USA) / len(df) * 100, 1)) + ')',
                           str( ),
                           str(math.trunc(df_USA.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['age'].iloc[6])) + ')',
                           str(df_USA.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_USA.groupby(['gender']).count()['hospital'].iloc[1] / len(df_USA) * 100, 2)) + ')',
@@ -42,7 +42,7 @@ df_pc['USA dataset'] = [len(df_USA),
                           str(math.trunc(df_USA.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[6])) + ')',
                           str(math.trunc(df_USA.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['SpO2'].iloc[6])) + ')',
                           str(round(df_USA.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_USA.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_USA.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['France dataset'] = [len(df_France),
+df_pc['France dataset'] = [str(len(df_France)) + ' ' + '(' + str(round(len(df_France) / len(df) * 100, 1)) + ')',
                           str( ),
                           str(math.trunc(df_France.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['age'].iloc[6])) + ')',
                           str(df_France.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_France.groupby(['gender']).count()['hospital'].iloc[1] / len(df_France) * 100, 2)) + ')',
@@ -53,7 +53,7 @@ df_pc['France dataset'] = [len(df_France),
                           str(math.trunc(df_France.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['resp_rate'].iloc[6])) + ')',
                           str(math.trunc(df_France.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['SpO2'].iloc[6])) + ')',
                           str(round(df_France.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_France.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_France.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['Switzerland dataset'] = [len(df_Switzerland),
+df_pc['Switzerland dataset'] = [str(len(df_Switzerland)) + ' ' + '(' + str(round(len(df_Switzerland) / len(df) * 100, 1)) + ')',
                           str( ),
                           str(math.trunc(df_Switzerland.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['age'].iloc[6])) + ')',
                           str(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1] / len(df_Switzerland) * 100, 2)) + ')',
