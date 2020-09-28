@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+import math
 
 ### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python, not dropping NAN values due to it removing rows with complete predictor and outcome data
 df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
