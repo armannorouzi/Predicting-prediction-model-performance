@@ -14,6 +14,11 @@ df_France = df[df['country'] == 'France']
 df_Switzerland = df[df['country'] == 'Switzerland']
 
 ### Creating table of characteristics in pandas dataframe as 'df_pc'
+df_pc = pd.DataFrame()
+df_pc[''] = ['Number of patients, n(%)', 'Sociodemographics', 'Age, median (quartiles)', 'Male gender, n(%)', 'Vital signs, median (quartiles)',
+              'Blood pressure systolic (mm Hg)', 'Confusion, n(%)', 'Pulse (bpm)',
+              'Respiratory rate (per min)', '  SpO2 (%)', 'Temperature (°C)']
+
 df_pc['Total dataset'] = [len(df),
                           str( ),
                           str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
