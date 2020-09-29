@@ -6,18 +6,19 @@ csl: bmcemerg.csl
 ---
 
 # A Segmented Approach to Predicting Prediction Model Performance After Transfer Using Unlabelled Data
+
 # Introduction
 In medicine, healthcare workers are confronted daily with a wide range of information that needs to be processed in order to make clinical decisions. Due to the vast amount of information, prediction models (also referred to as risk scores or prediction rules) have been implemented in healthcare to aid in informed decision making (1, 2). The prediction models do this by providing a calculated risk of a specific outcome in a patient, based on their predictor variables (2, 3). The prediction models are capable of such tasks due to consisting of a machine learning algorithm (4). These algorithms are trained to find relationships in a dataset, consisting of both prediction data and outcome data, in order to assess the risk for the outcome in new unlabeled predictor data (4).
 
 The risk that is provided by the prediction models are generally based on multiple variables and the outcome could either be a disease (diagnostic model) or an event that will occur in the future (prognostic model) (4, 5).  In a diagnostic model, the information provided can be used to inform the patients that their symptoms are caused by a serious disease, to refer the patients to further testing or to initiate treatment (3). In a prognostic model, the information provided can be used to choose between therapeutic options and to plan lifestyle changes within the period that has been observed (2, 6). The prognostic models could also be utilized to risk-stratify patients in therapeutic clinical trials (7, 8).
 
-The areas of use for prediction models are many within healthcare and there are several well-known prediction models that have been placed in clinical practice. The Ottowa Ankle Rules, CHA2DS2-VASc score and the Framingham Risk Score are just a few examples (9, 10, 11). To implement such models into healthcare, a few steps are required. The first step is to conduct a model development study (12). In these studies, a machine learning algorithm is utilized to develop a prediction model with a development sample, consisting of both predictor and outcome data which represents the development setting (4, 12). Depending on the algorithm chosen, the performance of the prediction model may vary (4). However, usually when the data is limited, a simpler algorithm is chosen such as a logistic regression (4). When the algorithm is chosen and the prediction model has been developed, it usually tends to be optimistic when estimating performance within the development sample and need to therefore be quantified for by internal validation techniques (3). The quantified optimism can thereafter be adjusted for by applying shrinkage or penalization to the model (13).
+The areas of use for prediction models are many within healthcare and there are several well-known prediction models that have been placed in clinical practice. The Ottowa Ankle Rules, CHA2DS2-VASc score and the Framingham Risk Score are just a few examples (9, 10, 11). To implement such models into healthcare, a few steps are required. The first step is to conduct a model development study (12). In these studies, a machine learning algorithm is utilized to develop a prediction model with a development sample, consisting of both predictor and outcome data which represents the development setting (4, 12). Depending on the algorithm chosen, the performance of the prediction model may vary (4). However, usually when the data is limited, a simpler algorithm is chosen such as a logistic regression (4). When the algorithm is chosen and the prediction model has been developed, it usually tends to be optimistic when estimating performance within the development sample and need to therefore be quantified for by internal validation techniques (3). The quantified optimism can thereafter be adjusted for by applying shrinkage or penalization to the model (13).<!-- This paragraph can definitely be split into at least two paragraphs. You can tell the reader a bit more about the scores you mention, whether they are diagnostic or prognostic and what outcomes they predict, for example. You could then outline the different steps needed to come up with a model, so that the reader knows that to expect. You could then go on to detail the development step.-->
 
 The second step is to conduct a validation study with or without model updating (14). In these studies, the prediction model is tested within a validation sample, representing a transfer setting, which contains new individuals that are similar but differ from those used in the development sample (14). This type of validation is performed because internally validated prediction models tend to lose performance in a new set of individuals and if the performance is poor, the model is of no use (14, 15). However, adjustments could be made accordingly with the data collected from the validation sample, which is also preferable than to developing a new prediction model from scratch (14).
 
-The final step is to conduct an impact study (14, 15). During this step the impact of the prediction model is quantified and compared to not using the model, Ideally in a randomised trial, in variables such as behavioural changes in patients and healthcare workers, patient health outcomes or cost-effectiveness of care (14, 15). If the impact of the prediction model is poor, it is of no use (15).
+The final step is to conduct an impact study (14, 15). During this step the impact of the prediction model is quantified and compared to not using the model, ideally in a randomised trial, using outcomes such as behavioural changes in patients and healthcare workers, patient health outcomes or cost-effectiveness of care (14, 15). If the impact of the prediction model is poor, it is of no use (15).
 
-After completing these steps, you can be more certain of whether the prediction model is applicable to the healthcare system from which you have developed the model. This however is easier said than done. As we previously mentioned during validation studies, developed and internally validated prediction models generally perform worse in the validation sample (14). In order to even be able to obtain this information, one needs to collect both predictor and outcome data from the transfer setting (14). This can be a problem that is both time inefficient and expensive if the data is difficult to access. In the case of the Framingham Risk Score, where the predictor data are cheap blood tests and simple demographics and the outcome data cardiovascular disease within 10 years, this problem is presented (11). This is because of the outcome data only being accessible after 10 years of follow up (11).
+After completing these steps, you can be more certain of whether the prediction model is applicable to the healthcare system from which you have developed the model. This however is easier said than done. As we previously mentioned during validation studies, developed and internally validated prediction models generally perform worse in the validation sample (14). In order to even be able to obtain this information, one needs to collect both predictor and outcome data from the transfer setting (14). This can be a problem that is both time inefficient and expensive if the data is difficult to access. In the case of the Framingham Risk Score, where the predictor data are cheap blood tests and simple demographics and the outcome data cardiovascular disease within 10 years, this problem is obvious (11). This is because of the outcome data only being accessible after 10 years of follow up (11).
 
 It would therefore be desirable to have a method that can estimate the performance of a prediction model when it is transferred to another setting by only utilizing unlabeled predictor data. Such a method would, in theory, if the estimated performance is good, lead to the possibility of implementing internally validated prediction models to a new setting without the need for a validation study that requires outcome data. In a healthcare system where the possibility exists to collect outcome data in the validation sample, this method would reduce the resource intensiveness of implementing the prediction model. In a healthcare system where the possibility does not exist to collect outcome data, this method would give another opportunity to implement the model due to only requiring unlabeled predictor data. In summary, this method would simplify the process of reaching the impact study step and hence indirectly improve, if the model has a positive impact, the behaviour in patients and healthcare professionals, patient health outcomes and cost-effectiveness of care.
 
@@ -39,10 +40,10 @@ The patients enrolled in the public database were all seeking emergency departme
 The final sample size arrived at in this study will include the total number of participants with complete data. Complete data is defined as having no missing model predictor or model outcome data in the database used to conduct this study. 
 
 ## Variables
-### Model predictor  
+### Model predictor
 The predictor data used to estimate outcome in our prediction models are respiratory rate, confusion, peripheral oxygen saturation (SpO2), systolic blood pressure (BPS), heart rate and temperature.
 
-### Model outcome  
+### Model outcome
 The outcome of the prediction models is referral to the intensive care unit (ICU) within the time that the patients are in the hospital.
 
 ### Patient characteristics
@@ -51,15 +52,29 @@ To describe the participants in the database, we will in addition to model predi
 ## Missing data
 To account for missing data in the database, we will carry out a complete case analysis because only missing a few observations (18).
 
-## Statistical methods  
-### Statistical analysis  
+## Statistical methods
+### Statistical analysis
 Analysis in this study is all performed in the programming language python (19). P-values of <0,05 are considered significant. 
 **jag förstår inte hur vi ska jämföra propensity metoden mot den riktiga performancen av modellen i transfer setting*
 
-### Dataset splitting  
+Example: France model in the US  
+
+1. Develop prediction model: respiratory rate, confusion, SpO2, BPS, HR temp to predict ICU admission
+2. Assess prediction model performance in French data.
+3. Assess "true" prediction model performance in US data
+4. Estimate the performance of the "naive" approach by calculating the difference between 3 and 2
+5. Merge the predictor data from the French and US datasets and label France as 1 and US as 0
+6. Develop a propensity model using the data in 5. to predict the origin of the data
+7. Identify observations that the propensity model missclassified as 0 when they were 1
+8. Assess the performance of the prediction model in the segment of observations identified in 7.
+9. Estimate the performance of the "segmented approach" by calculating the difference between 3 and 8
+10. Calculate the difference between 9 and 4 to see what approach performed best
+11. Repeat 1-10 1000 times to estimate the uncertainty (confidence intervals) of the estimates in 2, 3, 4, 8, 9 and 10 (empirical bootstrap)
+
+### Dataset splitting
 The publicly available dataset will be divided into three separate datasets based on which country the data was collected from.
 
-### Sequence of analysis  
+### Sequence of analysis
 The sequence of analysis to conduct this study is dataset assignment, prediction model development, prediction model performance, propensity method development and propensity method performance. 
 
 ### Dataset assignment
@@ -84,16 +99,16 @@ Finally, the difference in accuracy in the model development and model validatio
 Each of the datasets will then be split into a development sample and a validation sample with the train test split function implemented in the scikit-learn package in python (21). The development sample representing the development setting will contain 80 percent of the dataset and the validation sample representing the transfer setting will contain the remaining 20 percent.
 
 ## Ethical considerations
-### Principle of autonomy  
+### Principle of autonomy 
 The research data used in this study has been made freely reusable and citable in Dryad Digital Repository (17). Therefore, the principle of autonomy is upheld due to there not being any requirement for informed consent.
 
-### Principle of beneficence  
+### Principle of beneficence
 This study will attempt to act in the best interest of future analytical research and indirectly patients, by developing and testing a new method for predicting prediction model performance in a transfer setting while only utilizing predictor data.
 
-### Principle of nonmaleficence  
+### Principle of nonmaleficence
 The method developed in this study will be made without the intention of harm intentionally or unintentionally. To nullify the risk of patient identification leakage, we have considered to use a dataset that has already been depersonalized and made freely reusable and for general use. By taking these actions we determine that the risk to the population is minimal.
 
-### Principle of Justice  
+### Principle of Justice
 Due to this study being analytical, the principle of justice does not prevail. However, the data in the study will be treated equally.
 
 ### Ethical permit

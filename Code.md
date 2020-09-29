@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 import math
+from tableone import TableOne
 
 ### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python, not dropping NAN values due to it removing rows with complete predictor and outcome data
 df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
@@ -13,16 +14,26 @@ df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
 df_USA = df[df['country'] == 'USA']
 df_France = df[df['country'] == 'France']
 df_Switzerland = df[df['country'] == 'Switzerland']
-
+```
 ### Creating table of characteristics in pandas dataframe as 'df_pc'
-df_pc = pd.DataFrame()
-df_pc[''] = ['Number of patients, n(%)', 'Sociodemographics', 'Age, median (quartiles)', 'Male gender, n(%)', 'Vital signs, median (quartiles)',
-              'Blood pressure systolic (mm Hg)', 'Confusion, n(%)', 'Pulse (bpm)',
-              'Respiratory rate (per min)', 'SpO2 (%)', 'Temperature (°C)']
+
+### I suggest you have a look at the tableone package imported above. Try TableOne(df) to get a sense of what it does
+dfpc = pd.DataFrame()
+dfpc[''] = ['Number of patients, n(%)',
+            'Sociodemographics',
+            'Age, median (quartiles)',
+            'Male gender, n(%)',
+            'Vital signs, median (quartiles)',
+            'Blood pressure systolic (mm Hg)',
+            'Confusion, n(%)',
+            'Pulse (bpm)',
+            'Respiratory rate (per min)',
+            'SpO2 (%)',
+            'Temperature (°C)']
 
 df_pc['Total dataset'] = [str(len(df)),
-                          str( ),
-                          str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
+                         str( ),
+                         str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
                           str(df.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['gender']).count()['hospital'].iloc[1] / len(df) * 100, 2)) + ')',
                           str( ),
                           str(math.trunc(df.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df.describe()['BPS'].iloc[6])) + ')',
