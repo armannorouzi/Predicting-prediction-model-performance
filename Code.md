@@ -1,146 +1,209 @@
-# All code written in python, IDE pycharm. Open in raw format to access the code.
+# All code written in Python with IDE Pycharm, copy raw format to run script.
 
-### import library
+#### import library
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-import math
 from tableone import TableOne
+from sklearn.utils import resample
+import random
+import statistics as s
 
-### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python, not dropping NAN values due to it removing rows with complete predictor and outcome data
+#### importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python
 df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
+# df = df.dropna()
 
-### Splitting data based on country of origin
+df.rename(columns={'resp_rate': 'Respiratory rate (per min)',
+                   'BPS': 'Systolic blood pressure (mm Hg)',
+                   'HR': 'Pulse (bpm)',
+                   'temp': 'Temperature (°C)',
+                   'SpO2': 'SpO2 (%)',
+                   'confusion': 'Confusion',
+                   'gender': 'Gender',
+                   'age': 'Age',
+                   'ICU': 'ICU admission'},
+          inplace=True)
+
+### renaming index f to female, m to male
+df['Gender'] = df['Gender'].replace({'f': 'female', 'm': 'male'})
+
+### creating table of characterisitcs (we can remove p-vals and missing values if we want (just letting it be as it is right now)
+columns = ['ICU admission', 'Age', 'Gender', 'Systolic blood pressure (mm Hg)', 'Confusion', 'Pulse (bpm)',
+           'Respiratory rate (per min)', 'SpO2 (%)', 'Temperature (°C)']
+groupby = 'country'
+nonnormal = ['Respiratory rate (per min)', 'Systolic blood pressure (mm Hg)', 'Pulse (bpm)', 'Temperature (°C)',
+             'SpO2 (%)']
+mytable = TableOne(df, columns=columns, groupby=groupby, nonnormal=nonnormal, pval=True, pval_test_name=True)
+
+#### Splitting data based on country of origin
 df_USA = df[df['country'] == 'USA']
 df_France = df[df['country'] == 'France']
 df_Switzerland = df[df['country'] == 'Switzerland']
-```
-### Creating table of characteristics in pandas dataframe as 'df_pc'
 
-### I suggest you have a look at the tableone package imported above. Try TableOne(df) to get a sense of what it does
-dfpc = pd.DataFrame()
-dfpc[''] = ['Number of patients, n(%)',
-            'Sociodemographics',
-            'Age, median (quartiles)',
-            'Male gender, n(%)',
-            'Vital signs, median (quartiles)',
-            'Blood pressure systolic (mm Hg)',
-            'Confusion, n(%)',
-            'Pulse (bpm)',
-            'Respiratory rate (per min)',
-            'SpO2 (%)',
-            'Temperature (°C)']
+### assigning development sample and validation sample
+devsample = df_France
+valsample = df_USA
 
-df_pc['Total dataset'] = [str(len(df)),
-                         str( ),
-                         str(math.trunc(df.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df.describe()['age'].iloc[6])) + ')',
-                          str(df.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['gender']).count()['hospital'].iloc[1] / len(df) * 100, 2)) + ')',
-                          str( ),
-                          str(math.trunc(df.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df.describe()['BPS'].iloc[6])) + ')',
-                          str(df.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df.groupby(['confusion']).count()['hospital'].iloc[1] / df.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
-                          str(math.trunc(df.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df.describe()['HR'].iloc[6])) + ')',
-                          str(math.trunc(df.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df.describe()['resp_rate'].iloc[6])) + ')',
-                          str(math.trunc(df.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df.describe()['SpO2'].iloc[6])) + ')',
-                          str(round(df.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['USA dataset'] = [str(len(df_USA)) + ' ' + '(' + str(round(len(df_USA) / len(df) * 100, 1)) + ')',
-                          str( ),
-                          str(math.trunc(df_USA.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['age'].iloc[6])) + ')',
-                          str(df_USA.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_USA.groupby(['gender']).count()['hospital'].iloc[1] / len(df_USA) * 100, 2)) + ')',
-                          str( ),
-                          str(math.trunc(df_USA.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['BPS'].iloc[6])) + ')',
-                          str(df_USA.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_USA.groupby(['confusion']).count()['hospital'].iloc[1] / df_USA.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
-                          str(math.trunc(df_USA.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['HR'].iloc[6])) + ')',
-                          str(math.trunc(df_USA.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['resp_rate'].iloc[6])) + ')',
-                          str(math.trunc(df_USA.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_USA.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_USA.describe()['SpO2'].iloc[6])) + ')',
-                          str(round(df_USA.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_USA.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_USA.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['France dataset'] = [str(len(df_France)) + ' ' + '(' + str(round(len(df_France) / len(df) * 100, 1)) + ')',
-                          str( ),
-                          str(math.trunc(df_France.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['age'].iloc[6])) + ')',
-                          str(df_France.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_France.groupby(['gender']).count()['hospital'].iloc[1] / len(df_France) * 100, 2)) + ')',
-                          str( ),
-                          str(math.trunc(df_France.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['BPS'].iloc[6])) + ')',
-                          str(df_France.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_France.groupby(['confusion']).count()['hospital'].iloc[1] / df_France.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
-                          str(math.trunc(df_France.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['HR'].iloc[6])) + ')',
-                          str(math.trunc(df_France.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['resp_rate'].iloc[6])) + ')',
-                          str(math.trunc(df_France.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_France.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_France.describe()['SpO2'].iloc[6])) + ')',
-                          str(round(df_France.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_France.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_France.describe()['temp'].iloc[6], 1)) + ')']
-df_pc['Switzerland dataset'] = [str(len(df_Switzerland)) + ' ' + '(' + str(round(len(df_Switzerland) / len(df) * 100, 1)) + ')',
-                          str( ),
-                          str(math.trunc(df_Switzerland.describe()['age'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['age'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['age'].iloc[6])) + ')',
-                          str(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_Switzerland.groupby(['gender']).count()['hospital'].iloc[1] / len(df_Switzerland) * 100, 2)) + ')',
-                          str( ),
-                          str(math.trunc(df_Switzerland.describe()['BPS'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['BPS'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['BPS'].iloc[6])) + ')',
-                          str(df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[1]) + ' ' + '(' + str(round(df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[1] / df_Switzerland.groupby(['confusion']).count()['hospital'].iloc[0] * 100, 1)) + ')',
-                          str(math.trunc(df_Switzerland.describe()['HR'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['HR'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['HR'].iloc[6])) + ')',
-                          str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['resp_rate'].iloc[6])) + ')',
-                          str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[5])) + ' ' + '(' + str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[4])) + ', ' + str(math.trunc(df_Switzerland.describe()['SpO2'].iloc[6])) + ')',
-                          str(round(df_Switzerland.describe()['temp'].iloc[5], 1)) + ' ' + '(' + str(round(df_Switzerland.describe()['temp'].iloc[4], 1)) + ', ' + str(round(df_Switzerland.describe()['temp'].iloc[6], 1)) + ')']
+### list of accuracys
 
-### Assigning which data is development setting 'dsetting' and which data is transfer setting = 'tsetting'
-dsetting = df_France
-tsetting = df_USA
+# 1: accuracy in development sample
+list_acc_dev = []
+# 2: true accuracy in validation sample
+list_acc_tval = []
+# 3: predicted accuracy in validation sample with segment
+list_acc_pval = []
+# 4: accuracy difference between 2 and 1 (Naive approach)
+list_acc_diff_tval_dev = []
+# 5: accuracy difference between 3 and 1 (Segmented approach)
+list_acc_diff_pval_dev = []
+# 6: accuracy difference between 5 and 4 (Approach difference)
+list_acc_diff_diff = []
 
-### Developing prediction model with logistic regression in the development setting, predictor = feature_cols, outcome = ICU
-feature_cols = ['resp_rate', 'confusion', 'BPS', 'HR', 'temp', 'SpO2']
-Xd = dsetting[feature_cols]
-yd = dsetting['ICU']
+### assigning X and y values
+feature_cols = ['Respiratory rate (per min)', 'Confusion', 'Systolic blood pressure (mm Hg)', 'Pulse (bpm)',
+                'Temperature (°C)', 'SpO2 (%)']
+Xd = devsample[feature_cols]
+yd = devsample['ICU admission']
 
-logreg = LogisticRegression().fit(Xd, yd)
+### resample with replacement from devsample and valsample and do the exact processes bootstrapped amount of times to develop 95% confidence intervalls
+### assigning bootstrap numbers
+bootstrap = 1000
 
-### Calculating accuracy in development setting with developed prediction model (as 'scored')
-scored = logreg.score(Xd, yd)
+### while looping everything to be able to boostrap confidence intervalls
+z = 0
+while z < bootstrap:
+    # assigning random interger to resample seed
+    randint = random.randint(1, 1000000)
 
-### Calculating true performance of model in transfer setting (as 'scoret')
-Xt = tsetting[feature_cols]
-yt = tsetting['ICU']
+    # creating new resamples of development sample and validation sample
+    devsamp = resample(devsample, n_samples=len(devsample), replace=True, random_state=randint)
+    valsamp = resample(valsample, n_samples=len(valsample), replace=True, random_state=randint)
 
-scoret = logreg.score(Xt, yt)
+    # assigning independent variables and dependent variables to the development sample
+    feature_cols = ['Respiratory rate (per min)', 'Confusion', 'Systolic blood pressure (mm Hg)', 'Pulse (bpm)',
+                    'Temperature (°C)', 'SpO2 (%)']
+    Xd = devsamp[feature_cols]
+    yd = devsamp['ICU admission']
 
-### Developing propensity model that will find missmatched development setting participants
-### 1) assigning devval index 1 to development setting, and devval index 0 to transfer setting
-dsetting['devval'] = 1
-tsetting['devval'] = 0
+    # developing prediction model with the development sample
+    logreg = LogisticRegression().fit(Xd, yd)
 
-### 2) pooling data from development setting and transfer setting
-df_pooled = pd.concat([dsetting, tsetting])
+    # assigning independet variables and dependent variables to the validation sample
+    Xv = valsamp[feature_cols]
+    yv = valsamp['ICU admission']
 
-### 3) Creating propensity model to distinguish which sample is from which setting
-Xc = df_pooled[feature_cols]
-yc = df_pooled['devval']
-propensitymodel = LogisticRegression().fit(Xc, yc)
+    # assigning "country of origin index" devsamp = 1, valsamp = 0.
+    devsamp['devval'] = 1
+    valsamp['devval'] = 0
 
-### 4) running propensity model to create predictions of which sample the pooled prediction variables belong to (as 'yc_pred')
-yc_pred = propensitymodel.predict(Xc).tolist()
+    # pooling devsamp and valsamp
+    pooled = pd.concat([devsamp, valsamp])
 
-### 5) comparing predicted setting to real setting and returning the iloc index for that missmatched development setting participant (as 'listmissmatch')
-yc_true = df_pooled['devval'].tolist()
+    # assigning independent variables and dependent variables in the pooled sample
+    Xp = pooled[feature_cols]
+    yp = pooled['devval']
 
-listn = list(range(0, len(dsetting)))
-listmissmatch = []
+    # developing propensity model based on variables in pooled sample
+    propensity = LogisticRegression().fit(Xp, yp)
 
-for i in listn:
-    if yc_pred[i] == 0:
-        listmissmatch.append(i)
+    # predicting origin of data from pooled sample and creating a list
+    yp_pred = propensity.predict(Xp).tolist()
 
-### segmenting the missmatched development setting participants
-df_segment = dsetting.iloc[listmissmatch]
+    # creating the true origin of data from pooled sample as a list
+    yp_true = pooled['devval'].tolist()
 
-### estimating true performance in transfer setting by utilizing logreg model previously developed and the segment that has been created in the step above (as 'predict_scoret')
-Xs = df_segment[feature_cols]
-ys = df_segment['ICU']
+    # comparing predicted and true origin of data lists in order to identify missmatched development sample data in list: missmatch
+    missmatch = []
+    listn = list(range(0, len(devsamp)))
 
-predict_scoret = logreg.score(Xs, ys)
+    for i in listn:
+        if yp_pred[i] == 0:
+            missmatch.append(i)
 
-### scored = prediction model performance in development setting
-### scoret = prediction model performance in transfer setting with outcome data
-### predict_socret = predicted performance in transfer setting with only predictor data
+    # making new segment with only missmatched development samples
+    df_segment = devsamp.iloc[missmatch]
 
-print(scored)
-print(scoret)
-print(predict_scoret)
+    # assinging independent and dependent variables in segmented samples
+    Xt = df_segment[feature_cols]
+    yt = df_segment['ICU admission']
 
+    # Predicting performance in development sample and storing accuracy in: list_acc_dev
+    list_acc_dev.append(logreg.score(Xd, yd) * 100)
 
+    # "true" performance predicted in validation sample and storing accuracy in: list_acc_tval
+    list_acc_tval.append(logreg.score(Xv, yv) * 100)
 
+    # "predicted" performance of prediction model in validation sample based on prediction made on segmented sample and storing accuracy in: list_acc_pval
+    list_acc_pval.append(logreg.score(Xt, yt) * 100)
 
+    # rerunning itterations untill satistifed with bootstrap
+    z += 1
 
+# calculating difference between true performance accuracy and development accuracy (naive apporach) as: list_acc_diff_tval_dev
+# calculating difference between predicted performance accuracy and development accuracy (segmented approach) as: list_acc_diff_pval_dev
+k = 0
+for i in list_acc_dev:
+    list_acc_diff_tval_dev.append(list_acc_tval[k] - i)
+    list_acc_diff_pval_dev.append(list_acc_pval[k] - i)
+    k += 1
 
+# calculating difference between differences (segmented approach - naive approach) as: list_acc_diff_pval_dev
+k = 0
+for i in list_acc_diff_pval_dev:
+    list_acc_diff_diff.append(i - list_acc_diff_tval_dev[k])
+    k += 1
+
+# sorting accuracys in order to draw confidence intervals
+list_acc_dev.sort()
+list_acc_tval.sort()
+list_acc_pval.sort()
+list_acc_diff_tval_dev.sort()
+list_acc_diff_pval_dev.sort()
+list_acc_diff_diff.sort()
+
+# identifying upper and lower index for confidence intervals
+ucii = int((len(list_acc_dev)) * 0.975 - 1)
+lcii = int((len(list_acc_dev)) * 0.025)
+
+# assigning confidence intervals for the accuracys and differences
+
+# development sample accuracy upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_dev_u = list_acc_dev[ucii]
+ci_dev_l = list_acc_dev[lcii]
+# true validation sample accuracy upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_tval_u = list_acc_tval[ucii]
+ci_tval_l = list_acc_tval[lcii]
+# predicted validation sample accuracy upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_pval_u = list_acc_pval[ucii]
+ci_pval_l = list_acc_pval[lcii]
+# naive apporach accuracy difference upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_tval_dev_u = list_acc_diff_tval_dev[ucii]
+ci_tval_dev_l = list_acc_diff_tval_dev[lcii]
+# segmented approach accuracy difference upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_pval_dev_u = list_acc_diff_pval_dev[ucii]
+ci_pval_dev_l = list_acc_diff_pval_dev[lcii]
+# difference between semgented approach difference and naive approach difference upper and lower confidence intervals (u = upper (97,5%), l = lower (2,5%)
+ci_diff_diff_u = list_acc_diff_diff[ucii]
+ci_diff_diff_l = list_acc_diff_diff[lcii]
+
+# developing dataframe of confidence intervals and means in order to make markdown table with them
+data = {'Mean': [str(s.mean(list_acc_dev)), str(s.mean(list_acc_tval)), str(s.mean(list_acc_pval)),
+                 str(s.mean(list_acc_diff_tval_dev)),
+                 str(s.mean(list_acc_diff_pval_dev)), str(s.mean(list_acc_diff_diff))],
+        '2,5%': [str(ci_dev_l), str(ci_tval_l), str(ci_pval_l), str(ci_tval_dev_l), str(ci_pval_dev_l),
+                 str(ci_diff_diff_l)],
+        '97,5%': [str(ci_dev_u), str(ci_tval_u), str(ci_pval_u), str(ci_tval_dev_u), str(ci_pval_dev_u),
+                  str(ci_diff_diff_u)]}
+
+dfci = pd.DataFrame(data, columns=['Mean', '2,5%', '97,5%'],
+                    index=['1: Prediction model accuracy in development sample',
+                           '2: Prediction model accuracy in validation sample',
+                           '3: Prediction model accuracy in segmented sample',
+                           '4: Accuracy difference between 2 and 1 (naive approach)',
+                           '5: Accuracy difference between 3 and 1 (segmented approach)',
+                           '6: Accuracy difference between 5 and 4 (approach difference)'])
+
+# printing characteristic table as markdown format
+print(mytable.tabulate(tablefmt="markdown"))
+# printing confidence intervals and mean? (didn't really know what to use here maybe median is better idk..)
+print(print(dfci.to_markdown()))
