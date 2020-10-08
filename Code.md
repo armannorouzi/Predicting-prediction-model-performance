@@ -1,5 +1,3 @@
-# All code written in Python with IDE Pycharm, copy raw format to run script.
-
 #### import library
 import numpy as np
 import pandas as pd
@@ -73,6 +71,7 @@ bootstrap = 1000
 z = 0
 while z < bootstrap:
     # assigning random interger to resample seed
+    print(z)
     randint = random.randint(1, 1000000)
 
     # creating new resamples of development sample and validation sample
@@ -85,59 +84,72 @@ while z < bootstrap:
     Xd = devsamp[feature_cols]
     yd = devsamp['ICU admission']
 
-    # developing prediction model with the development sample
-    logreg = LogisticRegression().fit(Xd, yd)
+    # developing prediction model with the development sample (If error, pass and restart iteration) 
+    # error = value error, due to risk for only 0:s or 1:s as y values during resampling(outcomes) = cant fit prediction model)
+    try:
+        logreg = LogisticRegression().fit(Xd, yd)
+    except:
+        pass
+    else:
+        # assigning independet variables and dependent variables to the validation sample
+        Xv = valsamp[feature_cols]
+        yv = valsamp['ICU admission']
 
-    # assigning independet variables and dependent variables to the validation sample
-    Xv = valsamp[feature_cols]
-    yv = valsamp['ICU admission']
+        # assigning "country of origin index" devsamp = 1, valsamp = 0.
+        devsamp['devval'] = 1
+        valsamp['devval'] = 0
 
-    # assigning "country of origin index" devsamp = 1, valsamp = 0.
-    devsamp['devval'] = 1
-    valsamp['devval'] = 0
+        # pooling devsamp and valsamp
+        pooled = pd.concat([devsamp, valsamp])
 
-    # pooling devsamp and valsamp
-    pooled = pd.concat([devsamp, valsamp])
+        # assigning independent variables and dependent variables in the pooled sample
+        Xp = pooled[feature_cols]
+        yp = pooled['devval']
 
-    # assigning independent variables and dependent variables in the pooled sample
-    Xp = pooled[feature_cols]
-    yp = pooled['devval']
+        # developing propensity model based on variables in pooled sample (If error, pass and restart iteration) 
+        # error = value error, due to risk for only 0:s or 1:s as y values during resampling (outcomes) = cant fit propensity model = error
+        try:
+            propensity = LogisticRegression().fit(Xp, yp)
+        except:
+            pass
+        else:
+            # predicting origin of data from pooled sample and creating a list
+            yp_pred = propensity.predict(Xp).tolist()
 
-    # developing propensity model based on variables in pooled sample
-    propensity = LogisticRegression().fit(Xp, yp)
+            # creating the true origin of data from pooled sample as a list
+            yp_true = pooled['devval'].tolist()
 
-    # predicting origin of data from pooled sample and creating a list
-    yp_pred = propensity.predict(Xp).tolist()
+            # comparing predicted and true origin of data lists in order to identify missmatched development sample data in list: missmatch
+            missmatch = []
+            listn = list(range(0, len(devsamp)))
 
-    # creating the true origin of data from pooled sample as a list
-    yp_true = pooled['devval'].tolist()
+            for i in listn:
+                if yp_pred[i] == 0:
+                    missmatch.append(i)
+                    
+            
+            # if 0 missmatched development sample = error during score calculation => passes and restarts iteration if 0 missmatches
+            if len(missmatch) == 0:
+                pass
+            else:
+                # making new segment with only missmatched development samples
+                df_segment = devsamp.iloc[missmatch]
 
-    # comparing predicted and true origin of data lists in order to identify missmatched development sample data in list: missmatch
-    missmatch = []
-    listn = list(range(0, len(devsamp)))
+                # assinging independent and dependent variables in segmented samples
+                Xt = df_segment[feature_cols]
+                yt = df_segment['ICU admission']
 
-    for i in listn:
-        if yp_pred[i] == 0:
-            missmatch.append(i)
+                # Predicting performance in development sample and storing accuracy in: list_acc_dev
+                list_acc_dev.append(logreg.score(Xd, yd) * 100)
 
-    # making new segment with only missmatched development samples
-    df_segment = devsamp.iloc[missmatch]
+                # "true" performance predicted in validation sample and storing accuracy in: list_acc_tval
+                list_acc_tval.append(logreg.score(Xv, yv) * 100)
 
-    # assinging independent and dependent variables in segmented samples
-    Xt = df_segment[feature_cols]
-    yt = df_segment['ICU admission']
+                # "predicted" performance of prediction model in validation sample based on prediction made on segmented sample and storing accuracy in: list_acc_pval
+                list_acc_pval.append(logreg.score(Xt, yt) * 100)
 
-    # Predicting performance in development sample and storing accuracy in: list_acc_dev
-    list_acc_dev.append(logreg.score(Xd, yd) * 100)
-
-    # "true" performance predicted in validation sample and storing accuracy in: list_acc_tval
-    list_acc_tval.append(logreg.score(Xv, yv) * 100)
-
-    # "predicted" performance of prediction model in validation sample based on prediction made on segmented sample and storing accuracy in: list_acc_pval
-    list_acc_pval.append(logreg.score(Xt, yt) * 100)
-
-    # rerunning itterations untill satistifed with bootstrap
-    z += 1
+                # rerunning itterations untill satistifed with bootstrap
+                z += 1
 
 # calculating difference between true performance accuracy and development accuracy (naive apporach) as: list_acc_diff_tval_dev
 # calculating difference between predicted performance accuracy and development accuracy (segmented approach) as: list_acc_diff_pval_dev
