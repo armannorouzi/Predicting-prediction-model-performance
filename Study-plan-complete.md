@@ -78,7 +78,7 @@ In the propensity model development step, the data from the development sample a
 ### Segment performance
 To assess the estimate of the prediction models performance within the country in which it is transferred to, the developed prediction model will be used to predict outcome within the segment previously created.
 
-### Approach comparis
+### Approach comparison
 In the final approach comparison step, to assess the performance of the naive approach, we will calculate the difference in performance between the prediction model validation step and the prediction model development step. We will also assess the performance of the segmented approach, by calculating the difference in performance between the segment performance step and the prediction model development step. To assess which approach performed best, will calculate the difference between the second difference and the first difference. Empirical bootstrap will be used to estimate 95% confidence intervals (CI) around the performances and the differences. The bootstrap procedure will use 1000 bootstrap samples drawn with replacements of the same size as the original samples. The sequence of analysis will be repeated until all combinations of dataset assignment have been performed.
 
 Example: France model in the US  
