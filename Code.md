@@ -1,4 +1,5 @@
 #### import library
+```python
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -23,7 +24,7 @@ df.rename(columns={'resp_rate': 'Respiratory rate (per min)',
           inplace=True)
 
 ### renaming index f to female, m to male
-df['Gender'] = df['Gender'].replace({'f': 'female', 'm': 'male'})
+df['Gender'] = df['Gender'].replace({'f': 'Female', 'm': 'Male'})
 
 ### creating table of characterisitcs (we can remove p-vals and missing values if we want (just letting it be as it is right now)
 columns = ['ICU admission', 'Age', 'Gender', 'Systolic blood pressure (mm Hg)', 'Confusion', 'Pulse (bpm)',
@@ -126,8 +127,7 @@ while z < bootstrap:
             for i in listn:
                 if yp_pred[i] == 0:
                     missmatch.append(i)
-                    
-            
+
             # if 0 missmatched development sample = error during score calculation => passes and restarts iteration if 0 missmatches
             if len(missmatch) == 0:
                 pass
