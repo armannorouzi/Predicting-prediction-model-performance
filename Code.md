@@ -15,15 +15,25 @@ simulate_data <- function(data, n = 1000) {
 simulated.data <- lapply(split.data, simulate_data)
 ```
 
-```python
+
+# Obs, jag har försökt att få det att funka med python men man måste ladda ner python interpreter med conda i miniconda för att få det att fungera...
+# Känns enklare att bara skriva om allt i R, men det kommer att ta en lite tid.
+```{r setup, include=False}
+knitr::opts_chunk$set(comment = NA)
+library(reticulate)
+use_python("C:/Users/shamy/Miniconda3" , required = TRUE)
+```
+
+
+
+# Vet inte om jag förstog helt angående bootstrappen. Nu tar vi iaf bootstrap samples från hela datasetet som includerar 1303 patienter. Detta både för development sample och validation sample
+```{python, echo =FALSE}
 # import library
-import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from tableone import TableOne
 from sklearn.utils import resample
 import random
-import statistics as s
 
 # Importing data set from https://doi.org/10.5061/dryad.d22q6vh with pandas in python
 df = pd.read_excel("https://datadryad.org/stash/downloads/file_stream/30857")
@@ -53,7 +63,7 @@ nonnormal = ['Respiratory rate (per min)', 'Systolic blood pressure (mm Hg)', 'P
              'SpO2 (%)']
 
 # Table of characteristics presented as: pctable
-pctable = TableOne(df, columns=columns, groupby=groupby, nonnormal=nonnormal, pval=True, htest_name=True)
+pctable = TableOne(df, columns=columns, groupby=groupby, nonnormal=nonnormal, missing = False)
 
 # Renaming back indexes to original values just because my code is writton on that...
 df['Gender'] = df['Gender'].replace({'Female': 'f', 'Male': 'm'})
@@ -69,6 +79,9 @@ df_Switzerland = df[df['country'] == 'Switzerland']
 combinations = [[df_USA, df_France], [df_USA, df_Switzerland], [df_France, df_USA], [df_Switzerland, df_USA], [df_Switzerland, df_France]]
 name = ['USA_to_France', 'USA_to_Switzerland', 'France_to_USA', 'Switzerland_to_USA', 'Switzerland_to_France']
 
+# removes SettingWithCopyWarning 
+pd.options.mode.chained_assignment = None
+
 u = 0
 while u < len(combinations):
     devsample = combinations[u][0]
@@ -80,7 +93,7 @@ while u < len(combinations):
     yd = devsample['ICU admission']
 
     # Developing prediction model with the development sample
-    logreg = LogisticRegression().fit(Xd, yd)
+    logreg = LogisticRegression(max_iter=10000).fit(Xd, yd)
 
     # Assigning independet variables and dependent variables to the validation sample
     Xv = valsample[feature_cols]
@@ -98,7 +111,7 @@ while u < len(combinations):
     yp = pooled['devval']
 
     # Developing propensity model based on variables in pooled sample
-    propensity = LogisticRegression().fit(Xp, yp)
+    propensity = LogisticRegression(max_iter=10000).fit(Xp, yp)
 
     # Predicting origin of data from pooled sample and creating a list
     yp_pred = propensity.predict(Xp).tolist()
@@ -164,18 +177,18 @@ while u < len(combinations):
 
     # resample with replacement from devsample and valsample and do the exact same processes as before but with bootstrapped amount of times to develop 95% confidence intervalls
     # assigning amount of bootstraps performed (we are doing 1000 in our study, can be changed in order to just see if it works)
-    bootstrap = 10
+    bootstrap = 20
 
     ### while looping everything to be able to boostrap confidence intervalls
     z = 0
     while z < bootstrap:
         # assigning random interger to resample seed
-        print(z)
         randint = random.randint(1, 1000000)
+        randinz = random.randint(1, 1000000)
 
         # creating new resamples of development sample and validation sample
-        devsamp = resample(devsample, n_samples=len(devsample), replace=True, random_state=randint)
-        valsamp = resample(valsample, n_samples=len(valsample), replace=True, random_state=randint)
+        devsamp = resample(df, n_samples=len(df), replace=True, random_state=randint)
+        valsamp = resample(df, n_samples=len(df), replace=True, random_state=randinz)
 
         # assigning independent variables and dependent variables to the development sample
         feature_cols = ['Respiratory rate (per min)', 'Confusion', 'Systolic blood pressure (mm Hg)',
@@ -187,7 +200,7 @@ while u < len(combinations):
         # If error occurs, restarts iteration, if not it will continue with the process
         # Error is a value error, happens due to risk for only 1:s or 0:s as outcome value => cannot fit logistic regression with that.
         try:
-            logreg = LogisticRegression().fit(Xd, yd)
+            logreg = LogisticRegression(max_iter=10000).fit(Xd, yd)
         except:
             pass
         else:
@@ -196,8 +209,11 @@ while u < len(combinations):
             yv = valsamp['ICU admission']
 
             # Assigning "country of origin index" devsamp = 1, valsamp = 0.
+
+
             devsamp['devval'] = 1
             valsamp['devval'] = 0
+
 
             # Pooling devsamp and valsamp
             pooled = pd.concat([devsamp, valsamp])
@@ -210,7 +226,7 @@ while u < len(combinations):
             # If error occurs, restarts iteration, if not it will continue with the process
             # Error is a value error, happens due to risk for only 1:s or 0:s as outcome values => cannot fit logistic regression with that
             try:
-                propensity = LogisticRegression().fit(Xp, yp)
+                propensity = LogisticRegression(max_iter=10000).fit(Xp, yp)
             except:
                 pass
             else:
@@ -329,12 +345,12 @@ while u < len(combinations):
 
     dfci = pd.DataFrame(data,
                         columns=['Point estimate', '95% Confidence Interval'],
-                        index=['1: Prediction model accuracy in development sample',
-                               '2: Prediction model accuracy in validation sample',
-                               '3: Prediction model accuracy in segmented sample',
-                               '4: Accuracy difference between 2 and 1 (naive approach)',
-                               '5: Accuracy difference between 3 and 1 (segmented approach)',
-                               '6: Accuracy difference between 5 and 4 (approach difference)'])
+                        index=['1: Accuracy in development sample',
+                               '2: Accuracy in validation sample',
+                               '3: Accuracy in segmented sample',
+                               '4: Difference 2 and 1 (naive approach)',
+                               '5: Difference 3 and 1 (segmented approach)',
+                               '6: Difference 5 and 4 (approach difference)'])
 
     vars()[name[u]] = dfci
 
@@ -342,7 +358,7 @@ while u < len(combinations):
 
 # printing patient characterisitcs
 print('Patient Characteristics')
-print(pctable.tabulate(tablefmt="Markdown"))
+print(pctable.tabulate(tablefmt="markdown"))
 print(' ')
 # printing USA transfer to France
 print(name[0])
