@@ -1,3 +1,20 @@
+```r
+library(rio)
+library(dplyr)
+library(MASS)
+url <- "https://datadryad.org/stash/downloads/file_stream/30857"
+raw.data <- import(url, format = "xls") %>% as_tibble()
+quant.variables <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
+quant.data <- raw.data[quant.variables]
+split.data <- split(quant.data, f = raw.data$country)
+simulate_data <- function(data, n = 1000) {
+    cov.matrix <- cov(data)
+    sim.data <- mvrnorm(1000, sapply(data, mean), cov.matrix, empirical = TRUE)
+    as_tibble(sim.data)
+}
+simulated.data <- lapply(split.data, simulate_data)
+```
+
 ```python
 # import library
 import numpy as np
@@ -147,7 +164,7 @@ while u < len(combinations):
 
     # resample with replacement from devsample and valsample and do the exact same processes as before but with bootstrapped amount of times to develop 95% confidence intervalls
     # assigning amount of bootstraps performed (we are doing 1000 in our study, can be changed in order to just see if it works)
-    bootstrap = 1000
+    bootstrap = 10
 
     ### while looping everything to be able to boostrap confidence intervalls
     z = 0
@@ -346,4 +363,4 @@ print(' ')
 # printing Switzerland to France
 print(name[4])
 print(Switzerland_to_France.to_markdown())
-
+```
