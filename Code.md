@@ -14,19 +14,656 @@ simulate_data <- function(data, n = 1000) {
 }
 simulated.data <- lapply(split.data, simulate_data)
 ```
+#kod skriven i R
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(comment = NA)
+##install.packages('readxl')
+#install.packages('httr')
+library(readxl)
+library(httr)
+#packageVersion('readxl')
+
+GET("https://datadryad.org/stash/downloads/file_stream/30857", write_disk(tf <- tempfile(fileext = '.xls')))
+df <- read_excel(tf, 1L)
 
 
-# Obs, jag har försökt att få det att funka med python men man måste ladda ner python interpreter med conda i miniconda för att få det att fungera...
-# Känns enklare att bara skriva om allt i R, men det kommer att ta en lite tid.
+#install.packages('tableone')
+library(tableone)
+#install.packages('survival')
+library(survival)
+
+colnames(df)[1] <- "Hospital"
+colnames(df)[2] <- "Country"
+colnames(df)[3] <- "Respiratory rate (per min)"
+colnames(df)[4] <- "Confusion"
+colnames(df)[5] <- "Gender"
+colnames(df)[7] <- "Peripheral oxygen saturation (%)"
+colnames(df)[8] <- "Systolic blood pressure (mm Hg)"
+colnames(df)[10] <- "Pulse (bpm)"
+colnames(df)[11] <- "Temperature (°C)"
+colnames(df)[16] <- "Age"
+colnames(df)[17] <- "ICU admission"
+
+#dput(names(df))
+
+df <- df[ -c(1, 6, 9, 12, 13, 14, 15)]
+
+#install.packages('dplyr')
+library(dplyr)
+df$Gender[df$Gender == 'm'] <- 'Male'
+df$Gender[df$Gender == 'm'] <- 'Female'
+
+df$Confusion[df$Confusion == 1] <- 'Yes'
+df$Confusion[df$Confusion == 0] <- 'No'
+
+df$`ICU admission`[df$`ICU admission` == 1] <- 'Yes'
+df$`ICU admission`[df$`ICU admission` == 0] <- 'No'
+
+catVars <- c("Confusion", "ICU admission")
+biomarkers <- c("Respiratory rate (per min)", "Peripheral oxygen saturation (%)", "")
+#summary(Pctable) to get skewed variables
+#dput(names(df))
+
+Pctable <- CreateTableOne(data = df, factorVars = catVars)
+#dput(names(df))
+
+df$Gender[df$Gender == 'm'] <- 'Male'
+df$Gender[df$Gender == 'f'] <- 'Female'
+
+df$Confusion[df$Confusion == 'Yes'] <- 1
+df$Confusion[df$Confusion == 'No'] <- 0
+
+df$`ICU admission`[df$`ICU admission` == 'Yes'] <- 1
+df$`ICU admission`[df$`ICU admission` == 'No'] <- 0
+
+df$Confusion <- as.numeric(df$Confusion)
+df$`ICU admission` <- as.numeric(df$`ICU admission`)
+
+df_USA <- df[1:940, ]
+df_France <- df[941:1295, ]
+df_Swizerland <- df[1296:1303, ]
+
+#---------------------------------------------
+pe_dev <- c()
+pe_tval <- c()
+pe_pval <- c()
+pe_tval_dev <- c()
+pe_pval_dev <- c()
+pe_diff_diff <- c()
+#---------------------------------------------
+#1
+devsample <- df_USA
+valsample <- df_France
+
+logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+probabilities <- logreg %>% predict(devsample, type = "response")
+predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+probabilities <- logreg %>% predict(valsample, type = "response")
+predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+devsample['devval'] <- 1
+valsample['devval'] <- 0
+
+df_pooled <- rbind(devsample, valsample)
+
+logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+probabilities <- logregi %>% predict(df_pooled, type = "response")
+predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+tf <- predict.classespool == df_pooled$`devval`
+
+missmatch = c()
+listn <- c(1:nrow(devsample))
+
+for (i in listn) {
+  if (tf[i] == TRUE) {
+    missmatch <- c(missmatch, i)
+  }
+}
+
+df_segment <-devsample[missmatch, ]
+
+probabilities <- logreg %>% predict(df_segment, type = "response")
+predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+pe_dev <- c(pe_dev, x)
+pe_tval <- c(pe_tval, y)
+pe_pval <- c(pe_pval, z)
+pe_tval_dev <- c(pe_tval_dev, (y - x))
+pe_pval_dev <- c(pe_pval_dev, (z - x))
+pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+#2
+devsample <- df_USA
+valsample <- df_Swizerland
+
+logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+probabilities <- logreg %>% predict(devsample, type = "response")
+predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+probabilities <- logreg %>% predict(valsample, type = "response")
+predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+devsample['devval'] <- 1
+valsample['devval'] <- 0
+
+df_pooled <- rbind(devsample, valsample)
+
+logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+probabilities <- logregi %>% predict(df_pooled, type = "response")
+predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+tf <- predict.classespool == df_pooled$`devval`
+
+missmatch = c()
+listn <- c(1:nrow(devsample))
+
+for (i in listn) {
+  if (tf[i] == TRUE) {
+    missmatch <- c(missmatch, i)
+  }
+}
+
+df_segment <-devsample[missmatch, ]
+
+probabilities <- logreg %>% predict(df_segment, type = "response")
+predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+pe_dev <- c(pe_dev, x)
+pe_tval <- c(pe_tval, y)
+pe_pval <- c(pe_pval, z)
+pe_tval_dev <- c(pe_tval_dev, (y - x))
+pe_pval_dev <- c(pe_pval_dev, (z - x))
+pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+#3
+devsample <- df_France
+valsample <- df_USA
+
+logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+probabilities <- logreg %>% predict(devsample, type = "response")
+predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+probabilities <- logreg %>% predict(valsample, type = "response")
+predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+devsample['devval'] <- 1
+valsample['devval'] <- 0
+
+df_pooled <- rbind(devsample, valsample)
+
+logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+probabilities <- logregi %>% predict(df_pooled, type = "response")
+predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+tf <- predict.classespool == df_pooled$`devval`
+
+missmatch = c()
+listn <- c(1:nrow(devsample))
+
+for (i in listn) {
+  if (tf[i] == TRUE) {
+    missmatch <- c(missmatch, i)
+  }
+}
+
+df_segment <-devsample[missmatch, ]
+
+probabilities <- logreg %>% predict(df_segment, type = "response")
+predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+pe_dev <- c(pe_dev, x)
+pe_tval <- c(pe_tval, y)
+pe_pval <- c(pe_pval, z)
+pe_tval_dev <- c(pe_tval_dev, (y - x))
+pe_pval_dev <- c(pe_pval_dev, (z - x))
+pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+#4
+devsample <- df_France
+valsample <- df_Swizerland
+
+logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+probabilities <- logreg %>% predict(devsample, type = "response")
+predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+probabilities <- logreg %>% predict(valsample, type = "response")
+predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+devsample['devval'] <- 1
+valsample['devval'] <- 0
+
+df_pooled <- rbind(devsample, valsample)
+
+logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+probabilities <- logregi %>% predict(df_pooled, type = "response")
+predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+tf <- predict.classespool == df_pooled$`devval`
+
+missmatch = c()
+listn <- c(1:nrow(devsample))
+
+for (i in listn) {
+  if (tf[i] == TRUE) {
+    missmatch <- c(missmatch, i)
+  }
+}
+
+df_segment <-devsample[missmatch, ]
+
+probabilities <- logreg %>% predict(df_segment, type = "response")
+predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+pe_dev <- c(pe_dev, x)
+pe_tval <- c(pe_tval, y)
+pe_pval <- c(pe_pval, z)
+pe_tval_dev <- c(pe_tval_dev, (y - x))
+pe_pval_dev <- c(pe_pval_dev, (z - x))
+pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+#5
+#devsample <- df_Swizerland
+#valsample <- df_USA
+
+#logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+#probabilities <- logreg %>% predict(devsample, type = "response")
+#predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+#x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+#probabilities <- logreg %>% predict(valsample, type = "response")
+#predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+#y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+#devsample['devval'] <- 1
+#valsample['devval'] <- 0
+
+#df_pooled <- rbind(devsample, valsample)
+
+#logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+#probabilities <- logregi %>% predict(df_pooled, type = "response")
+#predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+#tf <- predict.classespool == df_pooled$`devval`
+
+#missmatch = c()
+#listn <- c(1:nrow(devsample))
+
+#for (i in listn) {
+#  if (tf[i] == TRUE) {
+#    missmatch <- c(missmatch, i)
+#  }
+#}
+
+#df_segment <-devsample[missmatch, ]
+
+#probabilities <- logreg %>% predict(df_segment, type = "response")
+#predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+#z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+#pe_dev <- c(pe_dev, x)
+#pe_tval <- c(pe_tval, y)
+#pe_pval <- c(pe_pval, z)
+#pe_tval_dev <- c(pe_tval_dev, (y - x))
+#pe_pval_dev <- c(pe_pval_dev, (z - x))
+#pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+#6
+devsample <- df_Swizerland
+valsample <- df_France
+
+logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
+probabilities <- logreg %>% predict(devsample, type = "response")
+predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+
+x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+
+probabilities <- logreg %>% predict(valsample, type = "response")
+predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+
+y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+
+devsample['devval'] <- 1
+valsample['devval'] <- 0
+
+df_pooled <- rbind(devsample, valsample)
+
+logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
+probabilities <- logregi %>% predict(df_pooled, type = "response")
+predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+tf <- predict.classespool == df_pooled$`devval`
+
+missmatch = c()
+listn <- c(1:nrow(devsample))
+
+for (i in listn) {
+  if (tf[i] == TRUE) {
+    missmatch <- c(missmatch, i)
+  }
+}
+
+df_segment <-devsample[missmatch, ]
+
+probabilities <- logreg %>% predict(df_segment, type = "response")
+predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+pe_dev <- c(pe_dev, x)
+pe_tval <- c(pe_tval, y)
+pe_pval <- c(pe_pval, z)
+pe_tval_dev <- c(pe_tval_dev, (y - x))
+pe_pval_dev <- c(pe_pval_dev, (z - x))
+pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+#---------------------------------------------
+dev <- c()
+tval <- c()
+pval <- c()
+tval_dev <- c()
+pval_dev <- c()
+diff_diff <- c()
+#---------------------------------------------
+bootnumber <- 1000
+z = 1
+while (z <= bootnumber) {
+  devbootstrap <- sample_n(df, 1303, replace = TRUE)
+  valbootstrap <- sample_n(df, 1303, replace = TRUE)
+
+  logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = 
+                  devbootstrap, family = binomial)
+  probabilities <- logreg %>% predict(devbootstrap, type = "response")
+  predict.classes <- ifelse(probabilities > 0.5, 1, 0)
+
+  dev <- c(dev, (mean(predict.classes == devbootstrap$`ICU admission`) * 100))
+
+  probabilities <- logreg %>% predict(valbootstrap, type = "response")
+  predict.classes <- ifelse(probabilities > 0.5, 1, 0)
+
+  tval <- c(tval, (mean(predict.classes == valbootstrap$`ICU admission`) * 100))
+
+  devbootstrap['devval'] <- 1
+  valbootstrap['devval'] <- 0
+
+  df_pooledboot <- rbind(devbootstrap, valbootstrap)
+
+  logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = 
+                   df_pooledboot, family = binomial)
+  probabilities <- logregi %>% predict(df_pooledboot, type = "response")
+  predict.classes <- ifelse(probabilities > 0.5, 1, 0)
+  tfboot <- predict.classes == df_pooledboot$`devval`
+
+  missmatch = c()
+  listn <- c(1:nrow(devbootstrap))
+
+  for (i in listn) {
+    if (tfboot[i] == TRUE) {
+      missmatch <- c(missmatch, i)
+    }
+  }
+
+  df_segmentboot <-devbootstrap[missmatch, ]
+
+  probabilities <- logreg %>% predict(df_segmentboot, type = "response")
+  predict.classes <- ifelse(probabilities > 0.5, 1, 0)
+
+  pval <- c(pval, (mean(predict.classes == df_segmentboot$`ICU admission`) * 100))
+  
+  z <- z + 1
+
+}
+
+k <- 1
+while (k <= bootnumber) {
+  tval_dev <- c(tval_dev, (tval[k] - dev[k]))
+  pval_dev <- c(pval_dev, (pval[k] - dev[k]))
+  diff_diff <- c(diff_diff, (pval_dev[k] - tval_dev[k]))
+  k = k + 1
+}
+#---------------------------------------------
+dev1 <- c()
+dev2 <- c()
+dev3 <- c()
+dev4 <- c()
+dev5 <- c()
+#dev6 <- c()
+tval1 <- c()
+tval2 <- c()
+tval3 <- c()
+tval4 <- c()
+tval5 <- c()
+#tval6 <- c()
+pval1 <- c()
+pval2 <- c()
+pval3 <- c()
+pval4 <- c()
+pval5 <- c()
+#pval6 <- c()
+tval_dev1 <- c()
+tval_dev2 <- c()
+tval_dev3 <- c()
+tval_dev4 <- c()
+tval_dev5 <- c()
+#tval_dev6 <- c()
+pval_dev1 <- c()
+pval_dev2 <- c()
+pval_dev3 <- c()
+pval_dev4 <- c()
+pval_dev5 <- c()
+#pval_dev6 <- c()
+diff_diff1 <- c()
+diff_diff2 <- c()
+diff_diff3 <- c()
+diff_diff4 <- c()
+diff_diff5 <- c()
+#diff_diff6 <- c()
+
+
+k <- 1
+while (k <= bootnumber) {
+  dev1 <- c(dev1, (dev[k] - pe_dev[1]))
+  dev2 <- c(dev2, (dev[k] - pe_dev[2]))
+  dev3 <- c(dev3, (dev[k] - pe_dev[3]))
+  dev4 <- c(dev4, (dev[k] - pe_dev[4]))
+  dev5 <- c(dev5, (dev[k] - pe_dev[5]))
+  #dev6 <- c(dev6, (dev[k] - pe_dev[1]))
+  tval1 <- c(tval1, (tval[k] - pe_tval[1]))
+  tval2 <- c(tval2, (tval[k] - pe_tval[2]))
+  tval3 <- c(tval3, (tval[k] - pe_tval[3]))
+  tval4 <- c(tval4, (tval[k] - pe_tval[4]))
+  tval5 <- c(tval5, (tval[k] - pe_tval[5]))
+  #tval6 <- c(tval6, (tval[k] - pe_tval[6]))
+  pval1 <- c(pval1, (pval[k] - pe_pval[1]))
+  pval2 <- c(pval2, (pval[k] - pe_pval[2]))
+  pval3 <- c(pval3, (pval[k] - pe_pval[3]))
+  pval4 <- c(pval4, (pval[k] - pe_pval[4]))
+  pval5 <- c(pval5, (pval[k] - pe_pval[5]))
+  #pval6 <- c(pval6, (pval[k] - pe_pval[6]))
+  tval_dev1 <- c(tval_dev1, (tval_dev[k] - pe_tval_dev[1]))
+  tval_dev2 <- c(tval_dev2, (tval_dev[k] - pe_tval_dev[2]))
+  tval_dev3 <- c(tval_dev3, (tval_dev[k] - pe_tval_dev[3]))
+  tval_dev4 <- c(tval_dev4, (tval_dev[k] - pe_tval_dev[4]))
+  tval_dev5 <- c(tval_dev5, (tval_dev[k] - pe_tval_dev[5]))
+  #tval_dev6 <- c(tval_dev6, (tval_dev[k] - pe_tval_dev[1]))
+  pval_dev1 <- c(pval_dev1, (pval_dev[k] - pe_pval_dev[1]))
+  pval_dev2 <- c(pval_dev2, (pval_dev[k] - pe_pval_dev[2]))
+  pval_dev3 <- c(pval_dev3, (pval_dev[k] - pe_pval_dev[3]))
+  pval_dev4 <- c(pval_dev4, (pval_dev[k] - pe_pval_dev[4]))
+  pval_dev5 <- c(pval_dev5, (pval_dev[k] - pe_pval_dev[5]))
+  #pval_dev6 <- c(pval_dev6, (pval_dev[k] - pe_pval_dev[6]))
+  diff_diff1 <- c(diff_diff1, (diff_diff[k] - pe_diff_diff[1]))
+  diff_diff2 <- c(diff_diff2, (diff_diff[k] - pe_diff_diff[2]))
+  diff_diff3 <- c(diff_diff3, (diff_diff[k] - pe_diff_diff[3]))
+  diff_diff4 <- c(diff_diff4, (diff_diff[k] - pe_diff_diff[4]))
+  diff_diff5 <- c(diff_diff5, (diff_diff[k] - pe_diff_diff[5]))
+  #diff_diff6 <- c(diff_diff6, (diff_diff[k] - pe_diff_diff[6]))
+  k = k + 1
+}
+
+dev1 <- sort(dev1, decreasing = FALSE)
+dev2 <- sort(dev2, decreasing = FALSE)
+dev3 <- sort(dev3, decreasing = FALSE)
+dev4 <- sort(dev4, decreasing = FALSE)
+dev5 <- sort(dev5, decreasing = FALSE)
+#dev6 <- sort(dev6, decreasing = FALSE)
+tval1 <- sort(tval1, decreasing = FALSE)
+tval2 <- sort(tval2, decreasing = FALSE)
+tval3 <- sort(tval3, decreasing = FALSE)
+tval4 <- sort(tval4, decreasing = FALSE)
+tval5 <- sort(tval5, decreasing = FALSE)
+#tval6 <- sort(tval6, decreasing = FALSE)
+pval1 <- sort(pval1, decreasing = FALSE)
+pval2 <- sort(pval2, decreasing = FALSE)
+pval3 <- sort(pval3, decreasing = FALSE)
+pval4 <- sort(pval4, decreasing = FALSE)
+pval5 <- sort(pval5, decreasing = FALSE)
+#pval6 <- sort(pval6, decreasing = FALSE)
+tval_dev1 <- sort(tval_dev1, decreasing = FALSE)
+tval_dev2 <- sort(tval_dev2, decreasing = FALSE)
+tval_dev3 <- sort(tval_dev3, decreasing = FALSE)
+tval_dev4 <- sort(tval_dev4, decreasing = FALSE)
+tval_dev5 <- sort(tval_dev5, decreasing = FALSE)
+#tval_dev6 <- sort(tval_dev6, decreasing = FALSE)
+pval_dev1 <- sort(pval_dev1, decreasing = FALSE)
+pval_dev2 <- sort(pval_dev2, decreasing = FALSE)
+pval_dev3 <- sort(pval_dev3, decreasing = FALSE)
+pval_dev4 <- sort(pval_dev4, decreasing = FALSE)
+pval_dev5 <- sort(pval_dev5, decreasing = FALSE)
+#pval_dev6 <- sort(pval_dev6, decreasing = FALSE)
+diff_diff1 <- sort(diff_diff1, decreasing = FALSE)
+diff_diff2 <- sort(diff_diff2, decreasing = FALSE)
+diff_diff3 <- sort(diff_diff3, decreasing = FALSE)
+diff_diff4 <- sort(diff_diff4, decreasing = FALSE)
+diff_diff5 <- sort(diff_diff5, decreasing = FALSE)
+#diff_diff6 <- sort(diff_diff6, decreasing = FALSE)
+
+p975 <- bootnumber * 0.975
+p025 <- bootnumber * 0.025
+
+CI_dev1 <- c((pe_dev[1] - dev1[p975]), (pe_dev[1] - dev1[p025]))
+CI_dev2 <- c((pe_dev[2] - dev2[p975]), (pe_dev[2] - dev2[p025]))
+CI_dev3 <- c((pe_dev[3] - dev3[p975]), (pe_dev[3] - dev3[p025]))
+CI_dev4 <- c((pe_dev[4] - dev4[p975]), (pe_dev[4] - dev4[p025]))
+CI_dev5 <- c((pe_dev[5] - dev5[p975]), (pe_dev[5] - dev5[p025]))
+#CI_dev6 <- c((pe_dev[6] - dev6[p975]), (pe_dev[6] - dev6[p025]))
+
+CI_tval1 <- c((pe_tval[1] - tval1[p975]), (pe_tval[1] - tval1[p025]))
+CI_tval2 <- c((pe_tval[2] - tval2[p975]), (pe_tval[2] - tval2[p025]))
+CI_tval3 <- c((pe_tval[3] - tval3[p975]), (pe_tval[3] - tval3[p025]))
+CI_tval4 <- c((pe_tval[4] - tval4[p975]), (pe_tval[4] - tval4[p025]))
+CI_tval5 <- c((pe_tval[5] - tval5[p975]), (pe_tval[5] - tval5[p025]))
+#CI_tval6 <- c((pe_tval[6] - tval6[p975]), (pe_tval[6] - tval6[p025]))
+
+CI_pval1 <- c((pe_pval[1] - pval1[p975]), (pe_pval[1] - pval1[p025]))
+CI_pval2 <- c((pe_pval[2] - pval2[p975]), (pe_pval[2] - pval2[p025]))
+CI_pval3 <- c((pe_pval[3] - pval3[p975]), (pe_pval[3] - pval3[p025]))
+CI_pval4 <- c((pe_pval[4] - pval4[p975]), (pe_pval[4] - pval4[p025]))
+CI_pval5 <- c((pe_pval[5] - pval5[p975]), (pe_pval[5] - pval5[p025]))
+#CI_pval6 <- c((pe_pval[6] - pval6[p975]), (pe_pval[6] - pval6[p025]))
+
+CI_tval_dev1 <- c((pe_tval_dev[1] - tval_dev1[p975]), (pe_tval_dev[1] - tval_dev1[p025]))
+CI_tval_dev2 <- c((pe_tval_dev[2] - tval_dev2[p975]), (pe_tval_dev[2] - tval_dev2[p025]))
+CI_tval_dev3 <- c((pe_tval_dev[3] - tval_dev3[p975]), (pe_tval_dev[3] - tval_dev3[p025]))
+CI_tval_dev4 <- c((pe_tval_dev[4] - tval_dev4[p975]), (pe_tval_dev[4] - tval_dev4[p025]))
+CI_tval_dev5 <- c((pe_tval_dev[5] - tval_dev5[p975]), (pe_tval_dev[5] - tval_dev5[p025]))
+#CI_tval_dev6 <- c((pe_tval_dev[6] - tval_dev6[p975]), (pe_tval_dev[6] - tval_dev6[p025]))
+
+CI_pval_dev1 <- c((pe_pval_dev[1] - pval_dev1[p975]), (pe_pval_dev[1] - pval_dev1[p025]))
+CI_pval_dev2 <- c((pe_pval_dev[2] - pval_dev2[p975]), (pe_pval_dev[2] - pval_dev2[p025]))
+CI_pval_dev3 <- c((pe_pval_dev[3] - pval_dev3[p975]), (pe_pval_dev[3] - pval_dev3[p025]))
+CI_pval_dev4 <- c((pe_pval_dev[4] - pval_dev4[p975]), (pe_pval_dev[4] - pval_dev4[p025]))
+CI_pval_dev5 <- c((pe_pval_dev[5] - pval_dev5[p975]), (pe_pval_dev[5] - pval_dev5[p025]))
+#CI_pval_dev6 <- c((pe_pval_dev[6] - pval_dev6[p975]), (pe_pval_dev[6] - pval_dev6[p025]))
+
+CI_diff_diff1 <- c((pe_diff_diff[1] - diff_diff1[p975]), (pe_diff_diff[1] - diff_diff1[p025]))
+CI_diff_diff2 <- c((pe_diff_diff[2] - diff_diff2[p975]), (pe_diff_diff[2] - diff_diff2[p025]))
+CI_diff_diff3 <- c((pe_diff_diff[3] - diff_diff3[p975]), (pe_diff_diff[3] - diff_diff3[p025]))
+CI_diff_diff4 <- c((pe_diff_diff[4] - diff_diff4[p975]), (pe_diff_diff[4] - diff_diff4[p025]))
+CI_diff_diff5 <- c((pe_diff_diff[5] - diff_diff5[p975]), (pe_diff_diff[5] - diff_diff5[p025]))
+#CI_diff_diff6 <- c((pe_diff_diff[6] - diff_diff6[p975]), (pe_diff_diff[6] - diff_diff6[p025]))
+
+df1 <- data.frame('Point estimate' = c(pe_dev[1], pe_tval[1], pe_pval[1], pe_tval_dev[1], pe_pval_dev[1], pe_diff_diff[1]),
+                  'Lower 95% CI' = c(CI_dev1[1], CI_tval1[1], CI_pval1[1], CI_tval_dev1[1], CI_pval_dev1[1], CI_diff_diff1[1]),
+                  'Upper 95% CI' = c(CI_dev1[2], CI_tval1[2], CI_pval1[2], CI_tval_dev1[2], CI_pval_dev1[2], CI_diff_diff1[2]))
+
+
+df2 <- data.frame('Point estimate' = c(pe_dev[2], pe_tval[2], pe_pval[2], pe_tval_dev[2], pe_pval_dev[2], pe_diff_diff[2]),
+                  'Lower 95% CI' = c(CI_dev2[1], CI_tval2[1], CI_pval2[1], CI_tval_dev2[1], CI_pval_dev2[1], CI_diff_diff2[1]),
+                  'Upper 95% CI' = c(CI_dev2[2], CI_tval2[2], CI_pval2[2], CI_tval_dev2[2], CI_pval_dev2[2], CI_diff_diff2[2]))
+
+df3 <- data.frame('Point estimate' = c(pe_dev[3], pe_tval[3], pe_pval[3], pe_tval_dev[3], pe_pval_dev[3], pe_diff_diff[3]),
+                  'Lower 95% CI' = c(CI_dev3[1], CI_tval3[1], CI_pval3[1], CI_tval_dev3[1], CI_pval_dev3[1], CI_diff_diff3[1]),
+                  'Upper 95% CI' = c(CI_dev3[2], CI_tval3[2], CI_pval3[2], CI_tval_dev3[2], CI_pval_dev3[2], CI_diff_diff3[2]))
+
+df4 <- data.frame('Point estimate' = c(pe_dev[4], pe_tval[4], pe_pval[4], pe_tval_dev[4], pe_pval_dev[4], pe_diff_diff[4]),
+                  'Lower 95% CI' = c(CI_dev4[1], CI_tval4[1], CI_pval4[1], CI_tval_dev4[1], CI_pval_dev4[1], CI_diff_diff4[1]),
+                  'Upper 95% CI' = c(CI_dev4[2], CI_tval4[2], CI_pval4[2], CI_tval_dev4[2], CI_pval_dev4[2], CI_diff_diff4[2]))
+
+df5 <- data.frame('Point estimate' = c(pe_dev[5], pe_tval[5], pe_pval[5], pe_tval_dev[5], pe_pval_dev[5], pe_diff_diff[5]),
+                  'Lower 95% CI' = c(CI_dev5[1], CI_tval5[1], CI_pval5[1], CI_tval_dev5[1], CI_pval_dev5[1], CI_diff_diff5[1]),
+                  'Upper 95% CI' = c(CI_dev5[2], CI_tval5[2], CI_pval5[2], CI_tval_dev5[2], CI_pval_dev5[2], CI_diff_diff5[2]))
+
+#df6 <- data.frame('Point estimate' = c(pe_dev[6], pe_tval[6], pe_pval[6], pe_tval_dev[6], pe_pval_dev[6], pe_diff_diff[6]),
+#                  'Lower 95% CI' = c(CI_dev6[1], CI_tval6[1], CI_pval6[1], CI_tval_dev6[1], CI_pval_dev6[1], CI_diff_diff6[1]),
+#                  'Upper 95% CI' = c(CI_dev6[2], CI_tval6[2], CI_pval6[2], CI_tval_dev6[2], CI_pval_dev6[2], CI_diff_diff6[2]))
+
+rownames(df1) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+rownames(df2) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+rownames(df3) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+rownames(df4) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+rownames(df5) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+#rownames(df6) <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', 
+#                   '4: Difference 2 and 1 (Naive apporach)', '5: Difference 3 and 1 (Segmented apporach)', '6: Difference 5 and 4 (Approch difference)')
+
+print(Pctable, nonnormal = biomarkers) 
+
+library(knitr)
+
+kable(df1)
+kable(df2)
+kable(df3)
+kable(df4)
+kable(df5)
+```
+
+
+
+
+# Skrivit all kod i R. Tycker det är enklare att implementera det i R-markdown (men behåller koden i python ifall det behövs)
 ```{r setup, include=False}
 knitr::opts_chunk$set(comment = NA)
 library(reticulate)
 use_python("C:/Users/shamy/Miniconda3" , required = TRUE)
 ```
 
-
-
-# Vet inte om jag förstog helt angående bootstrappen. Nu tar vi iaf bootstrap samples från hela datasetet som includerar 1303 patienter. Detta både för development sample och validation sample
 ```{python, echo =FALSE}
 # import library
 import pandas as pd
