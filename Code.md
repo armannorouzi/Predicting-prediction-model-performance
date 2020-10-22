@@ -30,71 +30,43 @@ simulated.data <- do.call(rbind, simulated.data.list) %>% as.data.frame()
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(comment = NA)
-##install.packages('readxl')
-#install.packages('httr')
-library(readxl)
-library(httr)
-#packageVersion('readxl')
-
-GET("https://datadryad.org/stash/downloads/file_stream/30857", write_disk(tf <- tempfile(fileext = '.xls')))
-df <- read_excel(tf, 1L)
-
+df <- simulated.data
 
 #install.packages('tableone')
 library(tableone)
 #install.packages('survival')
 library(survival)
-
-colnames(df)[1] <- "Hospital"
-colnames(df)[2] <- "Country"
-colnames(df)[3] <- "Respiratory rate (per min)"
-colnames(df)[4] <- "Confusion"
-colnames(df)[5] <- "Gender"
-colnames(df)[7] <- "Peripheral oxygen saturation (%)"
-colnames(df)[8] <- "Systolic blood pressure (mm Hg)"
-colnames(df)[10] <- "Pulse (bpm)"
-colnames(df)[11] <- "Temperature (°C)"
-colnames(df)[16] <- "Age"
-colnames(df)[17] <- "ICU admission"
-
-#dput(names(df))
-
-df <- df[ -c(1, 6, 9, 12, 13, 14, 15)]
-
 #install.packages('dplyr')
 library(dplyr)
-df$Gender[df$Gender == 'm'] <- 'Male'
-df$Gender[df$Gender == 'm'] <- 'Female'
+#install.packages('boot')
+library(boot)
 
-df$Confusion[df$Confusion == 1] <- 'Yes'
-df$Confusion[df$Confusion == 0] <- 'No'
+new.colnames <- c(strata = "Country",
+                  age = "Age",                  
+                  resp_rate = "Respiratory rate (per min)",
+                  SpO2 = "Peripheral oxygen saturation (%)",
+                  BPS = "Systolic blood pressure (mm Hg)",
+                  HR = "Pulse (bpm)",
+                  temp = "Temperature (°C)",
+                  y = "ICU admission")
+df <- df[names(new.colnames)]
+colnames(df) <- new.colnames
 
 df$`ICU admission`[df$`ICU admission` == 1] <- 'Yes'
 df$`ICU admission`[df$`ICU admission` == 0] <- 'No'
 
-catVars <- c("Confusion", "ICU admission")
-biomarkers <- c("Respiratory rate (per min)", "Peripheral oxygen saturation (%)", "")
-#summary(Pctable) to get skewed variables
-#dput(names(df))
-
-Pctable <- CreateTableOne(data = df, factorVars = catVars)
-#dput(names(df))
-
-df$Gender[df$Gender == 'm'] <- 'Male'
-df$Gender[df$Gender == 'f'] <- 'Female'
-
-df$Confusion[df$Confusion == 'Yes'] <- 1
-df$Confusion[df$Confusion == 'No'] <- 0
+strata <- "Country"
+vars <- colnames(df)[!(colnames(df) %in% strata)]
+Pctable <- CreateTableOne(vars = vars, data = df, strata = strata, test = FALSE)
 
 df$`ICU admission`[df$`ICU admission` == 'Yes'] <- 1
 df$`ICU admission`[df$`ICU admission` == 'No'] <- 0
 
-df$Confusion <- as.numeric(df$Confusion)
 df$`ICU admission` <- as.numeric(df$`ICU admission`)
 
-df_USA <- df[1:940, ]
-df_France <- df[941:1295, ]
-df_Swizerland <- df[1296:1303, ]
+df_USA <- df[df$Country == "USA", ]
+df_France <- df[df$Country == "France", ]
+df_Swizerland <- df[df$Country == "Switzerland", ]
 
 #---------------------------------------------
 pe_dev <- c()
@@ -105,52 +77,84 @@ pe_pval_dev <- c()
 pe_diff_diff <- c()
 #---------------------------------------------
 #1
-devsample <- df_USA
-valsample <- df_France
 
-logreg <- glm(`ICU admission` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = devsample, family = binomial)
-probabilities <- logreg %>% predict(devsample, type = "response")
-predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+combinations <- expand.grid(rep(list(unique(df[, strata])), 2))
+strata.combinations <- t(combinations[combinations$Var1 != combinations$Var2, ]) %>% as.data.frame()
 
-x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
+estimate_performance <- function(strata.combination, df) {
+    devsample <- df[df[, strata] == strata.combination[1], ]
+    valsample <- df[df[, strata] == strata.combination[2], ]
 
-probabilities <- logreg %>% predict(valsample, type = "response")
-predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
+    logreg <- glm(`ICU admission` ~ `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)`, data = devsample, family = binomial)
+    probabilities <- logreg %>% predict(devsample, type = "response")
+    predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
 
-y <- mean(predict.classesval == valsample$`ICU admission`) * 100
+    ## Accuracy in development sample
+    x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
 
-devsample['devval'] <- 1
-valsample['devval'] <- 0
+    probabilities <- logreg %>% predict(valsample, type = "response")
+    predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
 
-df_pooled <- rbind(devsample, valsample)
+    ## Accuracy in validation sample
+    y <- mean(predict.classesval == valsample$`ICU admission`) * 100
 
-logregi <- glm(`devval` ~ `Confusion` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` , data = df_pooled, family = binomial)
-probabilities <- logregi %>% predict(df_pooled, type = "response")
-predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
-tf <- predict.classespool == df_pooled$`devval`
+    ## Assign data "origin" as new variable and combine data
+    devsample['devval'] <- 1
+    valsample['devval'] <- 0
 
-missmatch = c()
-listn <- c(1:nrow(devsample))
+    df_pooled <- rbind(devsample, valsample)
 
-for (i in listn) {
-  if (tf[i] == TRUE) {
-    missmatch <- c(missmatch, i)
-  }
+    ## Create propensity model
+    logregi <- glm(`devval` ~ `Age` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` + `Respiratory rate (per min)`, data = df_pooled, family = binomial)
+    probabilities <- logregi %>% predict(df_pooled, type = "response")
+    predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
+
+    ## Identify the segment of observation in the development data that
+    ## are "most similar" to the observations in the validation data
+    missmatch <- predict.classespool == 0 & df_pooled$devval == 1
+    df_segment <-devsample[missmatch, ]
+
+    ## Accuracy in segment
+    probabilities <- logreg %>% predict(df_segment, type = "response")
+    predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+
+    z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+
+    ## Redefined some of these measures. Now a positive diff_diff
+    ## means that the segmented approach works better than the naive
+    ## approach
+    pe_dev <- x
+    pe_tval <- y
+    pe_pval <- z
+    pe_tval_dev <- abs(y - x)
+    pe_pval_dev <- abs(z - x)
+    pe_diff_diff <- pe_tval_dev - pe_pval_dev 
+
+    stats <- c(pe_dev = pe_dev,
+               pe_tval = pe_tval,
+               pe_pval = pe_pval,
+               pe_tval_dev = pe_tval_dev,
+               pe_pval_dev = pe_pval_dev,
+               pe_diff_diff = pe_diff_diff)
+    return (stats)
 }
 
-df_segment <-devsample[missmatch, ]
+run_simulation <- function(df, rows, strata.combinations) {
+    boot.data <- df[rows, ]
+    performance.estimates <- lapply(strata.combinations, estimate_performance, df = boot.data)
+    names(performance.estimates) <- sapply(strata.combinations, paste0, collapse = ".to.")
+    results <- unlist(performance.estimates)
+    return (results)
+}
 
-probabilities <- logreg %>% predict(df_segment, type = "response")
-predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
+n.bootstraps <- 5
+boot.results <- boot(df, run_simulation, R = n.bootstraps, strata.combinations = strata.combinations)
+cis <- lapply(seq_along(boot.results$t0), function(i) boot.ci(boot.results, index = i, type = "norm"))
+pes.with.cis <- lapply(cis, function(ci) c(pe = ci$t0, lb = ci$normal[2], ub = ci$normal[3]))
 
-z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
+## The above should be enough to get you the point estimates with 95% CIs (increse the number of bootstraps to 1000) for all relavant combinations of transfers
 
-pe_dev <- c(pe_dev, x)
-pe_tval <- c(pe_tval, y)
-pe_pval <- c(pe_pval, z)
-pe_tval_dev <- c(pe_tval_dev, (y - x))
-pe_pval_dev <- c(pe_pval_dev, (z - x))
-pe_diff_diff <- c(pe_diff_diff, ((z - x) - (y - x)))
+
 #---------------------------------------------
 #2
 devsample <- df_USA
