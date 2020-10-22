@@ -3,16 +3,28 @@ library(rio)
 library(dplyr)
 library(MASS)
 url <- "https://datadryad.org/stash/downloads/file_stream/30857"
-raw.data <- import(url, format = "xls") %>% as_tibble()
-quant.variables <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
-quant.data <- raw.data[quant.variables]
-split.data <- split(quant.data, f = raw.data$country)
-simulate_data <- function(data, n = 1000) {
-    cov.matrix <- cov(data)
-    sim.data <- mvrnorm(1000, sapply(data, mean), cov.matrix, empirical = TRUE)
-    as_tibble(sim.data)
+raw.data <- import(url, format = "xls") %>% as.data.frame()
+strata <- "country"
+data.list <- split(raw.data, f = as.factor(raw.data[, strata]))
+predictors <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
+outcome <- "ICU"
+simulate_data <- function(dataset, outcome, predictors, size = 10000) {
+    y <- dataset[, outcome]
+    x <- dataset[predictors]
+    fit <- glm(y ~ ., family = binomial, data = cbind(y, x))
+    cov.matrix <- cov(x)
+    sim.data <- mvrnorm(size, sapply(x, mean), cov.matrix, empirical = TRUE) %>% as.data.frame()
+    sim.data$yhat <- predict(fit, newdata = sim.data, type = "response")
+    sim.data$y <- rbinom(nrow(sim.data), 1, prob = sim.data$yhat)
+    sim.data
 }
-simulated.data <- lapply(split.data, simulate_data)
+simulated.data.list <- lapply(data.list, simulate_data, outcome = outcome, predictors = predictors)
+simulated.data.list <- lapply(names(data.list), function(name) {
+    dataset <- simulated.data.list[[name]]
+    dataset$strata <- name
+    dataset
+})
+simulated.data <- do.call(rbind, simulated.data.list) %>% as.data.frame()
 ```
 #kod skriven i R
 
