@@ -358,5 +358,159 @@ ggplot(df_pr_diff_diff, mapping=aes(x =`Country transfer`, y=`Point estimate (95
     geom_hline(yintercept = 0, alpha = 0.4) +
     coord_flip() +
     theme_test()
+#------------------------------------------------
+#tables med våra värden
+i = 1
+sig1.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig1.3 <- c(sig1.3, '')
+    } else { if (between(0, pes.with.cis[[i]][[2]], pes.with.cis[[i]][[3]]) == FALSE) {
+        sig1.3 <- c(sig1.3, '*')
+    } else {sig1.3 <- c(sig1.3, '')}
+    }
+    i = i+1
+}
+i = 1    
+df1.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig1.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig1.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig1.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig1.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig1.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig1.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+
+i = 1
+sig2.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig2.3 <- c(sig2.3, '')
+    } else { if (between(0, pes.with.cis[[i+6]][[2]], pes.with.cis[[i+6]][[3]]) == FALSE) {
+        sig2.3 <- c(sig2.3, '*')
+    } else { sig2.3 <- c(sig2.3, '')}
+    }
+    i = i+1
+}
+i = 7    
+df2.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig1.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig2.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig2.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig2.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig2.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig2.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+
+i = 1
+sig3.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig3.3 <- c(sig3.3, '')
+    } else { if (between(0, pes.with.cis[[i+12+3]][[2]], pes.with.cis[[i+12+3]][[3]]) == FALSE) {
+        sig3.3 <- c(sig3.3, '*')
+    } else { sig3.3 <- c(sig3.3, '')}
+    }
+    i = i+1
+}
+i = 13    
+df3.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig3.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig3.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig3.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig3.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig3.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig3.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+
+i = 1
+sig4.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig4.3 <- c(sig4.3, '')
+    } else { if (between(0, pes.with.cis[[i+18]][[2]], pes.with.cis[[i+18]][[3]]) == FALSE) {
+        sig4.3 <- c(sig4.3, '*')
+    } else { sig4.3 <- c(sig4.3, '')}
+    }
+    i = i+1
+}
+i = 19   
+df4.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig4.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig4.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig4.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig4.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig4.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig4.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+
+i = 1
+sig5.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig5.3 <- c(sig5.3, '')
+    } else { if (between(0, pes.with.cis[[i+24]][[2]], pes.with.cis[[i+24]][[3]]) == FALSE) {
+        sig5.3 <- c(sig5.3, '*')
+    } else { sig5.3 <- c(sig5.3, '')}
+    }
+    i = i+1
+}
+i = 25    
+df5.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig5.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig5.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig5.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig5.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig5.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig5.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+
+i = 1
+sig6.3 <- c()
+while (i <= 6) {
+    if (i <= 3) {
+        sig6.3 <- c(sig6.3, '')
+    } else { if (between(0, pes.with.cis[[i+30]][[2]], pes.with.cis[[i+30]][[3]]) == FALSE) {
+        sig6.3 <- c(sig6.3, '*')
+    } else { sig6.3 <- c(sig6.3, '')}
+    }
+    i = i+1
+}
+i = 31    
+df6.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
+                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
+                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig6.3[1], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig6.3[2], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig6.3[3], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig6.3[4], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig6.3[5], sep =''),
+                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig6.3[6], sep ='')),
+                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
+                    check.names = FALSE)
+                                   
+
+library(knitr)
+kable(df1.3, align = 'cc', caption = paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '))
+kable(df2.3, align = 'cc', caption = paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '))
+kable(df3.3, align = 'cc',caption = paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '))
+kable(df4.3, align = 'cc', caption = paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '))
+kable(df5.3, align = 'cc', caption = paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '))
+kable(df6.3, align = 'cc', caption = paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to '))
 
 
