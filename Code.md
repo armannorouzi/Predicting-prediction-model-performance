@@ -68,16 +68,6 @@ df_USA <- df[df$Country == "USA", ]
 df_France <- df[df$Country == "France", ]
 df_Swizerland <- df[df$Country == "Switzerland", ]
 
-#---------------------------------------------
-pe_dev <- c()
-pe_tval <- c()
-pe_pval <- c()
-pe_tval_dev <- c()
-pe_pval_dev <- c()
-pe_diff_diff <- c()
-#---------------------------------------------
-#1
-
 combinations <- expand.grid(rep(list(unique(df[, strata])), 2))
 strata.combinations <- t(combinations[combinations$Var1 != combinations$Var2, ]) %>% as.data.frame()
 
@@ -130,6 +120,20 @@ estimate_performance <- function(strata.combination, df) {
     pe_pval_dev <- abs(z - x)
     pe_diff_diff <- pe_tval_dev - pe_pval_dev 
 
+    ## We are interested in the "error" associated with each
+    ## approach. By taking the absolute difference we weigh positive
+    ## and negative errors equally, i.e. we say that it is equally
+    ## wrong to overestimate accuracy as it is to underestimate. This
+    ## simplifies the calculations. Consider the following example, if
+    ## the accuracy of model A is 0.7 in the development sample and
+    ## the true accuracy in the validation sample is 0.6. Then the
+    ## error is 0.1. If the accuracy in the segmented sample is 0.75
+    ## then the error of this approach is -.05. When we are
+    ## calculating the difference in error we get -0.15, which is not
+    ## what we want, because we can see that the difference in error
+    ## is really 0.05. One easy solution is then to work with absolute
+    ## differences. Hope this makes sense.
+    
     stats <- c(pe_dev = pe_dev,
                pe_tval = pe_tval,
                pe_pval = pe_pval,
