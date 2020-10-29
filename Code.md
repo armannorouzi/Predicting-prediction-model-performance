@@ -1,14 +1,40 @@
-```r
+```r, echo = FALSE
+knitr::opts_chunk$set(comment = NA)
 library(rio)
 library(dplyr)
 library(MASS)
+library(tableone)
+library(survival)
+library(dplyr)
+library(boot)
 url <- "https://datadryad.org/stash/downloads/file_stream/30857"
 raw.data <- import(url, format = "xls") %>% as.data.frame()
 strata <- "country"
-data.list <- split(raw.data, f = as.factor(raw.data[, strata]))
 predictors <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
 outcome <- "ICU"
-simulate_data <- function(dataset, outcome, predictors, size = 10000) {
+
+## This function creates a simulated dataset, i.e. simulates data for
+## each level of a given strata variables and combines these data into
+## a single data.frame. The size is for each level of strata.
+create_simulated_dataset <- function(raw.data, strata, outcome, predictors, size = 10000) {
+    data.list <- split(raw.data, f = as.factor(raw.data[, strata]))
+    simulated.data.list <- lapply(data.list, simulate_data,
+                                  outcome = outcome, predictors = predictors,
+                                  size = size)
+    simulated.data.list <- lapply(names(data.list), function(name) {
+        dataset <- simulated.data.list[[name]]
+        dataset$strata <- name
+        dataset
+    })
+    simulated.data <- do.call(rbind, simulated.data.list) %>% as.data.frame()
+    simulated.data
+}
+
+## This function simulates a dataset with continuous predictors and a
+## binary outcome. It achieves this based on a "template" dataset
+## using its covariance matrix and fitting a logistic regression model
+## with the true data. 
+simulate_data <- function(dataset, outcome, predictors, size) {
     y <- dataset[, outcome]
     x <- dataset[predictors]
     fit <- glm(y ~ ., family = binomial, data = cbind(y, x))
@@ -18,28 +44,8 @@ simulate_data <- function(dataset, outcome, predictors, size = 10000) {
     sim.data$y <- rbinom(nrow(sim.data), 1, prob = sim.data$yhat)
     sim.data
 }
-simulated.data.list <- lapply(data.list, simulate_data, outcome = outcome, predictors = predictors)
-simulated.data.list <- lapply(names(data.list), function(name) {
-    dataset <- simulated.data.list[[name]]
-    dataset$strata <- name
-    dataset
-})
-simulated.data <- do.call(rbind, simulated.data.list) %>% as.data.frame()
-```
-#kod skriven i R
 
-```{r, echo = FALSE}
-knitr::opts_chunk$set(comment = NA)
-df <- simulated.data
-
-#install.packages('tableone')
-library(tableone)
-#install.packages('survival')
-library(survival)
-#install.packages('dplyr')
-library(dplyr)
-#install.packages('boot')
-library(boot)
+df <- create_simulated_dataset(raw.data, strata, outcome, predictors, size = 10000)
 
 new.colnames <- c(strata = "Country",
                   age = "Age",                  
