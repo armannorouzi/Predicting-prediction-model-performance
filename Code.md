@@ -9,9 +9,6 @@ library(dplyr)
 library(boot)
 url <- "https://datadryad.org/stash/downloads/file_stream/30857"
 raw.data <- import(url, format = "xls") %>% as.data.frame()
-strata <- "country"
-predictors <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
-outcome <- "ICU"
 
 ## This function creates a simulated dataset, i.e. simulates data for
 ## each level of a given strata variables and combines these data into
@@ -26,8 +23,8 @@ create_simulated_dataset <- function(raw.data, strata, outcome, predictors, size
         dataset$strata <- name
         dataset
     })
-    simulated.data <- do.call(rbind, simulated.data.list) %>% as.data.frame()
-    simulated.data
+    simulated.dataset <- do.call(rbind, simulated.data.list) %>% as.data.frame()
+    simulated.dataset
 }
 
 ## This function simulates a dataset with continuous predictors and a
@@ -45,39 +42,10 @@ simulate_data <- function(dataset, outcome, predictors, size) {
     sim.data
 }
 
-df <- create_simulated_dataset(raw.data, strata, outcome, predictors, size = 10000)
-
-new.colnames <- c(strata = "Country",
-                  age = "Age",                  
-                  resp_rate = "Respiratory rate (per min)",
-                  SpO2 = "Peripheral oxygen saturation (%)",
-                  BPS = "Systolic blood pressure (mm Hg)",
-                  HR = "Pulse (bpm)",
-                  temp = "Temperature (°C)",
-                  y = "ICU admission")
-df <- df[names(new.colnames)]
-colnames(df) <- new.colnames
-
-df$`ICU admission`[df$`ICU admission` == 1] <- 'Yes'
-df$`ICU admission`[df$`ICU admission` == 0] <- 'No'
-
-strata <- "Country"
-vars <- colnames(df)[!(colnames(df) %in% strata)]
-Pctable <- CreateTableOne(vars = vars, data = df, strata = strata, test = FALSE)
-
-df$`ICU admission`[df$`ICU admission` == 'Yes'] <- 1
-df$`ICU admission`[df$`ICU admission` == 'No'] <- 0
-
-df$`ICU admission` <- as.numeric(df$`ICU admission`)
-
-df_USA <- df[df$Country == "USA", ]
-df_France <- df[df$Country == "France", ]
-df_Swizerland <- df[df$Country == "Switzerland", ]
-
-combinations <- expand.grid(rep(list(unique(df[, strata])), 2))
-strata.combinations <- t(combinations[combinations$Var1 != combinations$Var2, ]) %>% as.data.frame()
-
-estimate_performance <- function(strata.combination, df) {
+## This function estimates the performance of each approach in a
+## specific strata combination, as well as the differences between
+## approaches
+estimate_performance <- function(strata.combination, strata, df) {
     devsample <- df[df[, strata] == strata.combination[1], ]
     valsample <- df[df[, strata] == strata.combination[2], ]
 
@@ -149,20 +117,63 @@ estimate_performance <- function(strata.combination, df) {
     return (stats)
 }
 
-run_simulation <- function(df, rows, strata.combinations) {
-    boot.data <- df[rows, ]
-    performance.estimates <- lapply(strata.combinations, estimate_performance, df = boot.data)
+## This function runs one simulation
+run_simulation <- function(raw.data, strata, strata.combinations, outcome, predictors, size = 10000) {
+    df <- create_simulated_dataset(raw.data, strata, outcome, predictors, size = size)
+    new.colnames <- c(strata = "Country",
+                      age = "Age",                  
+                      resp_rate = "Respiratory rate (per min)",
+                      SpO2 = "Peripheral oxygen saturation (%)",
+                      BPS = "Systolic blood pressure (mm Hg)",
+                      HR = "Pulse (bpm)",
+                      temp = "Temperature (°C)",
+                      y = "ICU admission")
+    df <- df[names(new.colnames)]
+    colnames(df) <- new.colnames
+    df$`ICU admission`[df$`ICU admission` == 1] <- 'Yes'
+    df$`ICU admission`[df$`ICU admission` == 0] <- 'No'
+    strata <- "Country"
+    vars <- colnames(df)[!(colnames(df) %in% strata)]
+    ## Pctable <- CreateTableOne(vars = vars, data = df, strata = strata, test = FALSE)
+    df$`ICU admission`[df$`ICU admission` == 'Yes'] <- 1
+    df$`ICU admission`[df$`ICU admission` == 'No'] <- 0
+    df$`ICU admission` <- as.numeric(df$`ICU admission`)
+    df_USA <- df[df$Country == "USA", ]
+    df_France <- df[df$Country == "France", ]
+    df_Swizerland <- df[df$Country == "Switzerland", ]
+    performance.estimates <- lapply(strata.combinations, estimate_performance, strata = strata, df = df)
     names(performance.estimates) <- sapply(strata.combinations, paste0, collapse = ".to.")
     results <- unlist(performance.estimates)
     return (results)
 }
 
-n.bootstraps <- 5
-boot.results <- boot(df, run_simulation, R = n.bootstraps, strata.combinations = strata.combinations)
-cis <- lapply(seq_along(boot.results$t0), function(i) boot.ci(boot.results, index = i, type = "norm"))
-pes.with.cis <- lapply(cis, function(ci) c(pe = ci$t0, lb = ci$normal[2], ub = ci$normal[3]))
-
-## The above should be enough to get you the point estimates with 95% CIs (increse the number of bootstraps to 1000) for all relavant combinations of transfers
+## Okay, so instead of creting one simulated dataset and bootstrapping
+## that I've revised the code to repeat the simulation process
+## multiple times and then using the mean across simulations as the
+## point estimate and the 2.5% and 97.5% percentiles as measures of
+## uncertainty
+strata <- "country"
+predictors <- c("resp_rate", "SpO2", "BPS", "HR", "temp", "age")
+outcome <- "ICU"
+size <- 10000
+combinations <- expand.grid(rep(list(unique(raw.data[, strata])), 2))
+strata.combinations <- t(combinations[combinations$Var1 != combinations$Var2, ]) %>% as.data.frame()
+n.simulations <- 5
+simulation.results <- lapply(seq_len(n.simulations), function(i) run_simulation(
+                                                                     raw.data = raw.data,
+                                                                     strata = strata,
+                                                                     strata.combinations = strata.combinations,
+                                                                     outcome = outcome,
+                                                                     predictors = predictors,
+                                                                     size = size))
+simulation.data <- do.call(rbind, simulation.results)
+pe <- colMeans(simulation.data)
+cis <- lapply(as.data.frame(simulation.data), function(x) {
+    quantiles <- quantile(x, probs = c(0.025, 0.975))
+    names(quantiles) <- NULL
+    c(lb = quantiles[1], ub = quantiles[2])
+}) %>% as.data.frame() %>% t()
+pes.with.cis <- cbind(pe, cis) %>% as.data.frame() %>% split(f = as.factor(rownames(cis)))
 
 #------------------ I created these to straify for each accuracy mode instead for each country transfer, this way it is easier to create error bars.
 i = 31
