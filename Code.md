@@ -1,4 +1,4 @@
-```r, echo = FALSE
+```{r, echo = FALSE}
 knitr::opts_chunk$set(comment = NA)
 library(rio)
 library(dplyr)
@@ -7,6 +7,8 @@ library(tableone)
 library(survival)
 library(dplyr)
 library(boot)
+library(ggplot2)
+library(knitr)
 url <- "https://datadryad.org/stash/downloads/file_stream/30857"
 raw.data <- import(url, format = "xls") %>% as.data.frame()
 
@@ -175,363 +177,127 @@ cis <- lapply(as.data.frame(simulation.data), function(x) {
 }) %>% as.data.frame() %>% t()
 pes.with.cis <- cbind(pe, cis) %>% as.data.frame() %>% split(f = as.factor(rownames(cis)))
 
-#------------------ I created these to straify for each accuracy mode instead for each country transfer, this way it is easier to create error bars.
-i = 31
-df_pr_dev <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-
-i = 32
-df_pr_tval <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-i = 33
-df_pr_pval <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-
-i = 34
-df_pr_tval_dev <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-
-i = 35
-df_pr_pval_dev <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-i = 36
-df_pr_diff_diff <- data.frame(`Point estimate (95% CI)` = c(round(pes.with.cis[[i-30]][[1]],2), round(pes.with.cis[[i-24]][[1]],2), 
-                                                            round(pes.with.cis[[i-18]][[1]],2), round(pes.with.cis[[i-12]][[1]],2),
-                                                            round(pes.with.cis[[i-6]][[1]],2), round(pes.with.cis[[i]][[1]],2)),
-                              
-                    LCI = c(round(pes.with.cis[[i-30]][[2]],2), round(pes.with.cis[[i-24]][[2]],2), 
-                            round(pes.with.cis[[i-18]][[2]],2), round(pes.with.cis[[i-12]][[2]],2),
-                            round(pes.with.cis[[i-6]][[2]],2), round(pes.with.cis[[i]][[2]],2)),
-                    
-                    UCI = c(round(pes.with.cis[[i-30]][[3]],2), round(pes.with.cis[[i-24]][[3]],2), 
-                            round(pes.with.cis[[i-18]][[3]],2), round(pes.with.cis[[i-12]][[3]],2),
-                            round(pes.with.cis[[i-6]][[3]],2), round(pes.with.cis[[i]][[3]],2)),
-                    check.names = FALSE,
-                    `Country transfer` = c(paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '),
-                                           paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '),
-                                           paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '),
-                                           paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '),
-                                           paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '),
-                                           paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to ')))
-                                           
-#------------- labeling significance to those that do not span over 0. (differences)
-sig_tval_dev <- c()
-sig_pval_dev <- c()
-sig_diff_diff <- c()
-
-i = 1
-while (i <= 6) {
-    if (between(0, df_pr_tval_dev$LCI[i], df_pr_tval_dev$UCI[i]) == FALSE) {
-    sig_tval_dev <- c(sig_tval_dev, '*')
-    } else {sig_tval_dev <- c(sig_tval_dev, '')}
-    i = i+1
-}
-i = 1
-while (i <= 6) {
-    if (between(0, df_pr_pval_dev$LCI[i], df_pr_pval_dev$UCI[i]) == FALSE) {
-    sig_pval_dev <- c(sig_pval_dev, '*')
-    } else {sig_pval_dev <- c(sig_pval_dev, '')}
-    i = i+1
-}
-i = 1
-while (i <= 6) {
-    if (between(0, df_pr_diff_diff$LCI[i], df_pr_diff_diff$UCI[i]) == FALSE) {
-    sig_diff_diff <- c(sig_diff_diff, '*')
-    } else {sig_diff_diff <- c(sig_diff_diff, '')}
-    i = i+1
-}
-
-#---------- creating ggplot error bars with pointrange in order to visually show the 95% CI
-#install.packages('ggplot2')
-library(ggplot2)
-#errorbar + pointrange (could add singificance label with a triangle above singificant differences)
-ggplot() +
-    geom_errorbar(data=df_pr_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Accuracy in development sample') +
-    coord_flip() +
-    theme_test() 
-
-ggplot() +
-    geom_errorbar(data=df_pr_tval, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_tval, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Accuracy in validation sample') +
-    coord_flip() +
-    theme_test() 
-
-ggplot() +
-    geom_errorbar(data=df_pr_pval, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_pval, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Accuracy in segmented sample') +
-    coord_flip() +
-    theme_test() 
-
-ggplot(df_pr_tval_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`)) +
-    geom_errorbar(mapping=aes(ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_tval_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Accuracy difference naive approach') +
-    geom_text(aes(label = sig_tval_dev), nudge_x = 0.3) +
-    geom_hline(yintercept = 0, alpha = 0.4) +
-    coord_flip() +
-    theme_test() 
-
-ggplot(df_pr_pval_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`)) +
-    geom_errorbar(mapping=aes(ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_pval_dev, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Accuracy difference segmented approach') +
-    geom_text(aes(label = sig_pval_dev), nudge_x = 0.3) +
-    geom_hline(yintercept = 0, alpha = 0.4) +
-    coord_flip() +
-    theme_test() 
+#function for plotting jitterplot+errorbars, n = (1,2,3,4,5,6), each number for specific accuracy (dev, tval, pval, tval-dev, pval-dev, diffdiff)
+jitterplot <- function(n) {
+    i = 0
+    trans <- c()
+    values <- c()
+    cislb <- c()
+    cisub <- c()
+    ppe <- c()
+    signi <-c()
+    while (i <= 5) {
+        #all transfer names in a list in order to label all values with correct transfers
+        trans <- c(trans, rep(colnames(simulation.data)[n+i*6], n.simulations))
+        
+        #all specific point estimate for certain accuracy in 1 list
+        values <- c(values, simulation.data[,n+i*6])
+        
+        #confidence intervals to list in order to call easier in ggplot
+        cislb <- c(cislb, rep(cis[n+i*6], n.simulations))
+        cisub <- c(cisub, rep(cis[n+36+i*6], n.simulations))
+        
+        #all point estimates means added in list in order to call easier in ggplot
+        ppe <- c(ppe, rep(pe[[n+i*6]], n.simulations))
+        
+        #assigns significance in list
+        signi <- c(signi, rep(between(0, cis[n+i*6], cis[n+36+i*6]), n.simulations))
+        i = i+1
+    }
     
-
-ggplot(df_pr_diff_diff, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`)) +
-    geom_errorbar(mapping=aes(ymin=LCI, ymax=UCI), width=0.2, size=0.7, color="black") +
-    geom_pointrange(data=df_pr_diff_diff, mapping=aes(x =`Country transfer`, y=`Point estimate (95% CI)`, ymin=LCI, ymax=UCI), size=0.2, color="black", fill="black",
-                    shape=22) +
-    ylab('Approach accuracy difference') +
-    geom_text(aes(label = sig_diff_diff), nudge_x = 0.3) +
-    geom_hline(yintercept = 0, alpha = 0.4) +
-    coord_flip() +
-    theme_test()
-#------------------------------------------------
-#tables med våra värden
-i = 1
-sig1.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig1.3 <- c(sig1.3, '')
-    } else { if (between(0, pes.with.cis[[i]][[2]], pes.with.cis[[i]][[3]]) == FALSE) {
-        sig1.3 <- c(sig1.3, '*')
-    } else {sig1.3 <- c(sig1.3, '')}
-    }
-    i = i+1
+    # creating dataframe with all our important values needed to create plots
+    tempdf <- data.frame('Transfers' = trans,
+                         'Values' =values,
+                         'Significance' = signi)
+    
+    #converting boolean TRUE/FALSE to axtris or not for significance
+    tempdf$Significance[tempdf$Significance == FALSE] <- '*'
+    tempdf$Significance[tempdf$Significance == TRUE] <- ''
+    
+    #new xlabels and y labes
+    newxlabels <- c('France to USA', 'Switzerland to USA', 'USA to France', 'Switzerland to France', 'USA to Switzerland', 'France to Switzerland')
+    newylabels <- c('Development sample accuracy', 
+                    'True validation accuracy', 
+                    'Predicted validation accuracy', 
+                    'Naive approach absolute difference',
+                    'Segmented approach absolute difference',
+                    'Difference between naive and segmented approach')
+    
+    #ploting jitterplot + errorbars + mean pointestimate and significance axtris
+    p <- ggplot() +
+        geom_jitter(data = tempdf, aes(x = Transfers, y = Values), alpha = 0.09, position=position_jitter(0.2)) +
+        geom_errorbar(data = tempdf, aes(x = Transfers, y = Values, ymin = cislb, ymax = cisub), size = 0.1, width=0.5, color = "red") +
+        geom_point(data = tempdf, aes(x = Transfers, y = ppe), color= "red") +
+        scale_x_discrete(breaks=c(unique(tempdf$Transfers)), 
+                         labels= newxlabels) +
+        ylab(newylabels[n]) +
+        coord_flip() +
+        theme_test() 
+        if (n >= 4) {
+            p <- p + geom_hline(yintercept = 0, alpha = 0.4)
+            p <- p + geom_text(data = tempdf, aes(x = Transfers, y = ppe, label = Significance), nudge_x = 0.3, alpha = 0.015)
+        }
+    #returns our plot
+    return(p)
+    
 }
-i = 1    
-df1.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig1.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig1.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig1.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig1.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig1.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig1.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
+#plotting jitter plots
+jitterplot(1)
+jitterplot(2)
+jitterplot(3)
+jitterplot(4)
+jitterplot(5)
+jitterplot(6)
 
-i = 1
-sig2.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig2.3 <- c(sig2.3, '')
-    } else { if (between(0, pes.with.cis[[i+6]][[2]], pes.with.cis[[i+6]][[3]]) == FALSE) {
-        sig2.3 <- c(sig2.3, '*')
-    } else { sig2.3 <- c(sig2.3, '')}
+
+#function for returning tableplots
+dftable <- function(n) {
+    #assigning trans as rownames
+    trans <- c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
+                   '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)')
+    i = 1
+    pem <- c()
+    cislb <- c()
+    cisub <- c()
+    signi <- c()
+    stringci <- c()
+    while (i <= 6) {
+        #getting pointestiamte means
+        pem <- c(pem, round(pe[[(n-1)*6+i]], 2))
+        
+        #getting confidence intervals
+        cislb <- c(cislb, round(cis[[(n-1)*6+i]],2))
+        cisub <- c(cisub, round(cis[[(n-1)*6+36+i]],2))
+        
+        #assigning if significant
+        if (i >= 4) {
+            signi <- c(signi, between(0, cislb[i], cisub[i]))
+        } else { signi <- c(signi, '')}
+        
+        #stringing together a good looking CI that I can use in dataframe
+        stringci <- c(stringci, paste('[', toString(cislb[i]),' - ', toString(cisub[i]), ']',toString(signi[i]), sep = ''))
+        i = i+1
     }
-    i = i+1
+    #changing FALSE/TRUE to axtris or not
+    stringci <- gsub('FALSE', '*', stringci)
+    stringci <- gsub('TRUE', '', stringci)
+    
+    #assigning table with specific column names
+    tablep <- data.frame('Transfers' = trans,
+                        'Point estimate mean' = pem,
+                        '95% CI' = stringci,
+                        check.names = FALSE)
+    
+    #returning table i just created
+    return(tablep)
 }
-i = 7    
-df2.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig1.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig2.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig2.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig2.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig2.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig2.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
-
-i = 1
-sig3.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig3.3 <- c(sig3.3, '')
-    } else { if (between(0, pes.with.cis[[i+12+3]][[2]], pes.with.cis[[i+12+3]][[3]]) == FALSE) {
-        sig3.3 <- c(sig3.3, '*')
-    } else { sig3.3 <- c(sig3.3, '')}
-    }
-    i = i+1
-}
-i = 13    
-df3.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig3.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig3.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig3.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig3.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig3.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig3.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
-
-i = 1
-sig4.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig4.3 <- c(sig4.3, '')
-    } else { if (between(0, pes.with.cis[[i+18]][[2]], pes.with.cis[[i+18]][[3]]) == FALSE) {
-        sig4.3 <- c(sig4.3, '*')
-    } else { sig4.3 <- c(sig4.3, '')}
-    }
-    i = i+1
-}
-i = 19   
-df4.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig4.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig4.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig4.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig4.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig4.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig4.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
-
-i = 1
-sig5.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig5.3 <- c(sig5.3, '')
-    } else { if (between(0, pes.with.cis[[i+24]][[2]], pes.with.cis[[i+24]][[3]]) == FALSE) {
-        sig5.3 <- c(sig5.3, '*')
-    } else { sig5.3 <- c(sig5.3, '')}
-    }
-    i = i+1
-}
-i = 25    
-df5.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig5.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig5.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig5.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig5.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig5.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig5.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
-
-i = 1
-sig6.3 <- c()
-while (i <= 6) {
-    if (i <= 3) {
-        sig6.3 <- c(sig6.3, '')
-    } else { if (between(0, pes.with.cis[[i+30]][[2]], pes.with.cis[[i+30]][[3]]) == FALSE) {
-        sig6.3 <- c(sig6.3, '*')
-    } else { sig6.3 <- c(sig6.3, '')}
-    }
-    i = i+1
-}
-i = 31    
-df6.3 <- data.frame(`Point estimate` = c(round(pes.with.cis[[i]][[1]],2), round(pes.with.cis[[i+1]][[1]],2), round(pes.with.cis[[i+2]][[1]],2), round(pes.with.cis[[i+3]][[1]],2),
-                                         round(pes.with.cis[[i+4]][[1]],2), round(pes.with.cis[[i+5]][[1]],2)),
-                    `[95% CI]` = c(paste('[', toString(round(pes.with.cis[[i]][[2]],2)), ' - ', toString(round(pes.with.cis[[i]][[3]],2)), ']', sig6.3[1], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+1]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+1]][[3]],2)), ']', sig6.3[2], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+2]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+2]][[3]],2)), ']', sig6.3[3], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+3]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+3]][[3]],2)), ']', sig6.3[4], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+4]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+4]][[3]],2)), ']', sig6.3[5], sep =''),
-                                   paste('[', toString(round(pes.with.cis[[i+5]][[2]],2)), ' - ', toString(round(pes.with.cis[[i+5]][[3]],2)), ']', sig6.3[6], sep ='')),
-                    row.names = c('1: Accuracy in development sample', '2: Accuracy in validation sample', '3: Accuracy in segmented sample', '4: Difference 2 and 1 (Naive apporach)',
-                                  '5: Difference 3 and 1 (Segmented approach)', '6: Difference 5 and 4 (Approach difference)'),
-                    check.names = FALSE)
-                                   
-
-library(knitr)
-kable(df1.3, align = 'cc', caption = paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '))
-kable(df2.3, align = 'cc', caption = paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '))
-kable(df3.3, align = 'cc',caption = paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '))
-kable(df4.3, align = 'cc', caption = paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '))
-kable(df5.3, align = 'cc', caption = paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '))
-kable(df6.3, align = 'cc', caption = paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to '))
+#ploting different tables with knitr
+kable(dftable(1), align = 'lcc', caption = paste(strata.combinations$`2`[[1]], strata.combinations$`2`[2], sep = ' to '))
+kable(dftable(2), align = 'lcc', caption = paste(strata.combinations$`3`[[1]], strata.combinations$`3`[2], sep = ' to '))
+kable(dftable(3), align = 'lcc',caption = paste(strata.combinations$`4`[[1]], strata.combinations$`4`[2], sep = ' to '))
+kable(dftable(4), align = 'lcc', caption = paste(strata.combinations$`6`[[1]], strata.combinations$`6`[2], sep = ' to '))
+kable(dftable(5), align = 'lcc', caption = paste(strata.combinations$`7`[[1]], strata.combinations$`7`[2], sep = ' to '))
+kable(dftable(6), align = 'lcc', caption = paste(strata.combinations$`8`[[1]], strata.combinations$`8`[2], sep = ' to '))
+```
 
 
