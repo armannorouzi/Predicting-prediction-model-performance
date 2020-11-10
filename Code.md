@@ -437,11 +437,12 @@ Due to this study being analytical, the principle of justice does not prevail. H
 Because of this study being analytical and based on a freely reusable and public database, the need for an ethical permit was not required.
 
 # Results
-## Dataset population
-Out of the total 1303 participants in the dataset presenting the different countries in which the patient seeked ED care (`r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[1]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[1]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[2]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[2]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[3]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[3]]`), all had complete data and were included in the final analysis. Baseline characteristics for the dataset population stratified by country are listed in table 1.
+## Sample description
+All 1303 participants in the sample had complete data and were included in the final analysis (`r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[1]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[1]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[2]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[2]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[3]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[3]]`).<!-- Well, no observations were included in any other sense than that they were used to create the simulated data. I think that you should also present some summary statistics of the simulated data, similar to Table 1.--> Baseline characteristics for of the original sample stratified by country are shown in table 1.<!-- Add some general descriptors of the dataset, for example gender and age distribution etc-->
 
-`r kableone(Pctable, caption = 'Dataset population stratified by country')`
+`r kableone(Pctable, caption = Original data stratified by country')`
 
+<!-- Instead of presenting each transfer separately I suggest that you present the results in the same sequence as you present the methods, i.e. first model development, then validation, then the performance of each approach and finally the difference in performance between the approaches -->
 ## `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]`
 When developing the prediction model in `r strata.combinations[[1]][1]` and transferring it to `r strata.combinations[[2]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(1)[,2][6]` (95% CI `r cis[6]` to `r cis[6+36]`). Table 2 shows the mean performance and 95% CI for the performances and performance differences within the `r strata.combinations[[1]][1]` to `r strata.combinations[[2]][2]` transfer.
 
