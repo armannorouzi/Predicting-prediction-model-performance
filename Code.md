@@ -473,45 +473,112 @@ Due to this study being analytical, the principle of justice does not prevail. H
 Because of this study being analytical and based on a freely reusable and public database, the need for an ethical permit was not required.
 
 # Results
-## Sample description
-All 1303 participants in the sample had complete data and were included in the final analysis (`r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[1]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[1]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[2]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[2]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[3]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[3]]`).<!-- Well, no observations were included in any other sense than that they were used to create the simulated data. I think that you should also present some summary statistics of the simulated data, similar to Table 1.--> Baseline characteristics for of the original sample stratified by country are shown in table 1.<!-- Add some general descriptors of the dataset, for example gender and age distribution etc-->
+## Original Sample description
+All 1303 participants (`r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[1]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[1]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[2]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[2]]`, `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,1][[3]]` `r data.frame(sort(table(pctabledf$Country), decreasing = TRUE))[,2][[3]]`) in the original sample had complete data and were used to simulate new participants. The mean age of the participants in the original sample was `r round(mean(raw.data$age),2)` years and `r round(table(raw.data$gender)[[2]] / length(raw.data$gender) * 100, 2)` % were male. Baseline characteristics of the original sample stratified by country are shown in table 1.
 
-`r kableone(Pctable, caption = Original data stratified by country')`
+```{r, echo = FALSE}
+kableone(Pctable, caption = 'Baseline characteristics of the original sample used in the final analysis stratified by country.')
+```
 
-<!-- Instead of presenting each transfer separately I suggest that you present the results in the same sequence as you present the methods, i.e. first model development, then validation, then the performance of each approach and finally the difference in performance between the approaches -->
-## `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]`
-When developing the prediction model in `r strata.combinations[[1]][1]` and transferring it to `r strata.combinations[[2]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(1)[,2][6]` (95% CI `r cis[6]` to `r cis[6+36]`). Table 2 shows the mean performance and 95% CI for the performances and performance differences within the `r strata.combinations[[1]][1]` to `r strata.combinations[[2]][2]` transfer.
+## Simulation sample description
+With the 1303 participants in the original sample, `r length(list.simulated.dfs$Country) / 3` new participants were simulated for each country. The mean age of the participants in the simulated sample was `r round(mean(list.simulated.dfs$Age),2)` years. Baseline characteristics of the simulated sample stratified by country are shown in table 2.
 
-`r kable(dftable(1), align = 'lcc', caption = 'Performances and perforamnce differences for French model transfered to USA')`
+```{r, echo = FALSE}
+kableone(Pctablesim, caption = 'Baseline characteristics of the simulated sample used in the final analysis stratified by country.')
+```
 
-## `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]`
-When developing the prediction model in `r strata.combinations[[2]][1]` and transferring it to `r strata.combinations[[2]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(2)[,2][6]` (95% CI `r cis[12]` to `r cis[36+12]`). Table 3 shows the mean performances and 95% CI for the different performances and performance differences within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer.
+## Development sample performance
+When assessing the predictive performance within the development sample for each transfer combination, we found the mean predictive performance to be 
+`r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All development sample performances, mean performances and CI for each transfer combination are shown in figure 1.
 
-`r kable(dftable(2), align = 'lcc', caption = paste(strata.combinations[[2]][1], strata.combinations[[2]][2], sep = ' to '))`
+```{r, echo = FALSE, fig.cap = 'Development sample performances as percantage for transfer combinations. Each black dot represents the development sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI'}
+jitterplot(1)
 
-## `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]`
-When developing the prediction model in `r strata.combinations[[3]][1]` and transferring it to `r strata.combinations[[3]][2]`, we found no significant performance difference between the segmented approach and the naive approach with a mean difference of `r dftable(3)[,2][6]` (95% CI `r cis[18]` to `r cis[36+18]`). Table 4 shows the mean performances and 95% CI for the different performances and performance differences within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer.
+#ordning i dftable
+#dftable(1)
+#dftable(1)[[2]][1]
 
-`r kable(dftable(3), align = 'lcc',caption = paste(strata.combinations[[3]][1], strata.combinations[[3]][2], sep = ' to '))`
+#strata.combinations[[1]][1]
+#strata.combinations[[1]][2]
 
-## `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]`
-When developing the prediction model in `r strata.combinations[[4]][1]` and transferring it to `r strata.combinations[[4]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(4)[,2][6]` (95% CI `r cis[24]` to `r cis[36+24]`). Table 5 shows the mean performance and 95% CI for the performances and performance differences within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer.
+#dftable(2)
+#strata.combinations[[2]][1]
+#strata.combinations[[2]][2]
 
-`r kable(dftable(4), align = 'lcc', caption = paste(strata.combinations[[4]][1], strata.combinations[[4]][2], sep = ' to '))`
+#dftable(3)
+#strata.combinations[[3]][1]
+#strata.combinations[[3]][2]
 
-## `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]`
-When developing the prediction model in `r strata.combinations[[5]][1]` and transferring it to `r strata.combinations[[5]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(5)[,2][6]` (95% CI `r cis[30]` to `r cis[36+30]`). Table 6 shows the mean performance and 95% CI for the performances and performance differences within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer.
+#dftable(4)
+#strata.combinations[[4]][1]
+#strata.combinations[[4]][2]
 
-`r kable(dftable(5), align = 'lcc', caption = paste(strata.combinations[[5]][1], strata.combinations[[5]][2], sep = ' to '))`
+#dftable(5)
+#strata.combinations[[5]][1]
+#strata.combinations[[5]][2]
 
-## `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]`
-When developing the prediction model in `r strata.combinations[[6]][1]` and transferring it to `r strata.combinations[[6]][2]`, we found a significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(6)[,2][6]` (95% CI `r cis[36]` to `r cis[36+36]`). Table 7 shows the mean performance and 95% CI for the performances and performance differences within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer.
+#dftable(6)
+#strata.combinations[[6]][1]
+#strata.combinations[[6]][2]
 
-`r kable(dftable(6), align = 'lcc', caption = paste(strata.combinations[[6]][1], strata.combinations[[6]][2], sep = ' to '))`
+#ordningen i jitterplot
+#strata.combinations[[5]][1]
+#strata.combinations[[5]][2]
 
-## Naive vs segmented approach
-When we transferred the prediction model developed in `r strata.combinations[[1]][1]` to `r strata.combinations[[2]][2]`, in `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]`, in `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]`, in `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` and in `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]`, we found significantly higher performance in the segmented approach than the naive approach with mean differences of `r dftable(1)[,2][6]` (95% CI `r round(cis[6], 2)` to `r round(cis[6+36],2)`), `r dftable(2)[,2][6]` (95% CI `r round(cis[12],2)` to `r round(cis[36+12],2)`), `r dftable(4)[,2][6]` (95% CI `r round(cis[24],2)` to `r round(cis[36+24],2)`), `r dftable(5)[,2][6]` (95% CI `r round(cis[30],2)` to `r round(cis[36+30],2)`) and `r dftable(6)[,2][6]` (95% CI `r round(cis[36],2)` to `r round(cis[36+36],2)`) respectively. When we transferred the prediction model developed in `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]`, we found no significant performance difference between the segmented approach and the naive approach with a mean difference of `r dftable(3)[,2][6]` (95% CI `r round(cis[18],2)` to `r round(cis[36+18],2)`). Figure 1 illustrates the differences between the naive and segmented approach for all of the transfers.
+#strata.combinations[[3]][1]
+#strata.combinations[[3]][2]
 
-```{r, echo = FALSE} 
-print(jitterplot(6), caption = 'jitter')
+#strata.combinations[[2]][1]
+#strata.combinations[[2]][2]
+
+#strata.combinations[[4]][1]
+#strata.combinations[[4]][2]
+
+#strata.combinations[[1]][1]
+#strata.combinations[[1]][2]
+
+#strata.combinations[[6]][1]
+#strata.combinations[[6]][2]
+
+#strata.combinations
+```
+
+## True validation sample performance
+When assessing the true predictive performance within the validation sample for each transfer combination, we found the mean predictive performance to be 
+`r dftable(1)[[2]][2]` % (95% CI `r round(cis[2],2)` to `r round(cis[2+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][2]` % (95% CI `r round(cis[2+6],2)` to `r round(cis[2+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][2]` % (95% CI `r round(cis[2+12],2)` to `r round(cis[2+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][2]` % (95% CI `r round(cis[2+18],2)` to `r round(cis[2+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][2]` % (95% CI `r round(cis[2+24],2)` to `r round(cis[2+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][2]` % (95% CI `r round(cis[2+30],2)` to `r round(cis[2+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All true validation sample performances, mean performances and CI for each transfer combination are shown in figure 2.
+
+
+```{r, echo = FALSE, fig.cap = 'True validation sample performances as percantage for all transfer combinations. Each black dot represents the true validation sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI.'}
+jitterplot(2)
+```
+
+## Predicted validation sample performance
+When assessing the predicted predictive performance within the validation sample for each transfer combination, we found the mean predictive performance to be 
+`r dftable(1)[[2]][3]` % (95% CI `r round(cis[3],2)` to `r round(cis[3+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][3]` % (95% CI `r round(cis[3+6],2)` to `r round(cis[3+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][3]` % (95% CI `r round(cis[3+12],2)` to `r round(cis[3+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][3]` % (95% CI `r round(cis[3+18],2)` to `r round(cis[3+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][3]` % (95% CI `r round(cis[3+24],2)` to `r round(cis[3+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][3]` % (95% CI `r round(cis[3+30],2)` to `r round(cis[3+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All predicted validation sample performances, mean performances and CI for each transfer combination are shown in figure 3.
+
+```{r, echo = FALSE, fig.cap = 'Predicted validation sample performances as percantage for all transfer combinations. Each black dot represents the predicted validation sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI.'}
+jitterplot(3)
+```
+
+## Naive approach performance
+When assessing the naive approach performance for each transfer combination, we found the mean performance difference to be 
+`r dftable(1)[[2]][4]` % (95% CI `r round(cis[4],2)` to `r round(cis[4+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][4]` (95% CI `r round(cis[4+6],2)` to `r round(cis[4+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][4]` (95% CI `r round(cis[4+12],2)` to `r round(cis[4+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][4]` (95% CI `r round(cis[4+18],2)` to `r round(cis[4+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][4]` (95% CI `r round(cis[4+24],2)` to `r round(cis[4+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][4]` (95% CI `r round(cis[4+30],2)` to `r round(cis[4+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All naive approach differences, mean differences and CI for each transfer combination are shown in figure 4.
+
+```{r, echo = FALSE, fig.cap = 'Naive approach absolute difference as percantage point for all transfer combinations. Each black dot represents the naive apporach absolute difference in one simulated sample with the red dot representing the mean difference across all simulations. The bars indicate the 95% CI.'}
+jitterplot(4)
+```
+
+## Segmented approach results
+When assessing the segmented approach performance for each transfer combination, we found the mean performance difference to be 
+`r dftable(1)[[2]][5]` (95% CI `r round(cis[5],2)` to `r round(cis[5+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][5]` (95% CI `r round(cis[5+6],2)` to `r round(cis[5+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][5]` (95% CI `r round(cis[5+12],2)` to `r round(cis[5+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][5]` (95% CI `r round(cis[5+18],2)` to `r round(cis[5+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][5]` (95% CI `r round(cis[5+24],2)` to `r round(cis[5+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][5]` (95% CI `r round(cis[5+30],2)` to `r round(cis[5+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All segmented approach differences, mean differences and CI for each transfer combination are shown in figure 5.
+
+```{r, echo = FALSE, fig.cap = 'Segmented apporach absolute difference for all transfer combinations. Each black dot represents the segmented approach absolute difference in one simulated sample with the red dot representing the mean difference across all simulations. The bars indicate the 95% CI.'}
+jitterplot(5)
+```
+
+## Approach comparison
+When assessing the performance difference between the naive approach and the segmented approach in the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` and `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer, we found significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(1)[[2]][6]` (95% CI `r round(cis[6],2)` to `r round(cis[6+36],2)`), `r dftable(2)[[2]][6]` (95% CI `r round(cis[6+6],2)` to `r round(cis[6+36+6],2)`), `r dftable(4)[[2]][6]` (95% CI `r round(cis[6+18],2)` to `r round(cis[6+36+18],2)`), `r dftable(5)[[2]][6]` (95% CI `r round(cis[6+24],2)` to `r round(cis[6+36+24],2)`), `r dftable(6)[[2]][6]` (95% CI `r round(cis[6+30],2)` to `r round(cis[6+36+30],2)`) respectively. When assessing the performance difference between the naive approach and the segmented approach in the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, we found no significant performance difference between the naive approach and the segmented approach with a mean difference of `r dftable(3)[[2]][6]` (95% CI `r round(cis[6+12],2)` to `r round(cis[6+36+12],2)`). 
+
+```{r, echo = FALSE, fig.cap = 'Approach differences for all transfer combinations. Each black dot represents the difference between the naive and the segmented approach in one simulated sample with the red dot representing the mean approach difference across all simulations. The bars indicate the 95% CI. astrix (*) above the mean approach difference indicates statistical significant difference.'}
+jitterplot(6)
 ```
