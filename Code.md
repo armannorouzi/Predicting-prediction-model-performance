@@ -9,23 +9,28 @@ library(dplyr)
 library(boot)
 library(ggplot2)
 library(knitr)
+library(caret)
 url <- "https://datadryad.org/stash/downloads/file_stream/30857"
 raw.data <- import(url, format = "xls") %>% as.data.frame()
+
 
 #------------------------------------------
 pctabledf <- data.frame(raw.data)
 
-listk <- c(2, 3, 7, 8, 10, 11, 16, 17)
+listk <- c(2, 3, 5, 7, 8, 10, 11, 16, 17)
 listc <- c()
 for (i in listk) {
     listc <- c(listc, colnames(pctabledf[i]))
 }
 
 pctabledf <- subset(pctabledf, select = listc)
-colnames(pctabledf) <- c('Country', 'Respiratory rate (per min)', 'Peripheral oxygen saturation (%)', 'Systolic blood pressure (mm Hg)', 'Pulse (bpm)', 'Temperature (°C)', 'Age', 'ICU admission')
+colnames(pctabledf) <- c('Country', 'Respiratory rate (per min)', 'Gender', 'Peripheral oxygen saturation (%)', 'Systolic blood pressure (mm Hg)', 'Pulse (bpm)', 'Temperature (°C)', 'Age', 'ICU admission')
 
 pctabledf$`ICU admission`[pctabledf$`ICU admission` == 1] <- 'Admission'
 pctabledf$`ICU admission`[pctabledf$`ICU admission` == 0] <- 'No admission'
+
+pctabledf$Gender[pctabledf$Gender == 'f'] <- 'Female'
+pctabledf$Gender[pctabledf$Gender == 'm'] <- 'Male'
 
 strata <- "Country"
 vars <- colnames(pctabledf)[!(colnames(pctabledf) %in% strata)]
@@ -37,8 +42,10 @@ for (i in listk) {
 }
 biomarkers <- c(listc)
 
-Pctable <- CreateTableOne(vars = vars, data = pctabledf, strata = strata, test = FALSE)
+Pctable <- CreateTableOne(vars = vars, data = pctabledf, strata = strata, test = FALSE, addOverall = TRUE)
+
 #------------------------------------------
+
 
 ## This function creates a simulated dataset, i.e. simulates data for
 ## each level of a given strata variables and combines these data into
@@ -79,17 +86,30 @@ estimate_performance <- function(strata.combination, strata, df) {
     devsample <- df[df[, strata] == strata.combination[1], ]
     valsample <- df[df[, strata] == strata.combination[2], ]
 
-    logreg <- glm(`ICU admission` ~ `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` + `Respiratory rate (per min)`, data = devsample, family = binomial)
-    probabilities <- logreg %>% predict(devsample, type = "response")
-    predict.classesdev <- ifelse(probabilities > 0.5, 1, 0)
+    devsample$`ICU admission`[devsample$`ICU admission` == 1] <- 'Admission'
+    devsample$`ICU admission`[devsample$`ICU admission` == 0] <- 'No admission'
+    
+    valsample$`ICU admission`[valsample$`ICU admission` == 1] <- 'Admission'
+    valsample$`ICU admission`[valsample$`ICU admission` == 0] <- 'No admission'
+    
+    #Adjusting for overfitting with oneSE caret package
+    train.control <- trainControl(method = 'cv', number = 5, selectionFunction = 'oneSE')
 
-    ## Accuracy in development sample
+    #logreg is now our prediction model that is chosen through cross-validation 80-20 ?
+    logreg <- train(`ICU admission` ~ `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` + `Respiratory rate (per min)`, 
+                    data = devsample, method = 'glm', trControl = train.control)
+    
+    # x calcualted as correct prediction in the development sample
+    probabilities <- predict(logreg, newdata = devsample, type = 'prob')$Admission
+    predict.classesdev <- ifelse(probabilities > 0.5, 'Admission', 'No admission')
+
     x <- mean(predict.classesdev == devsample$`ICU admission`) * 100
-
-    probabilities <- logreg %>% predict(valsample, type = "response")
-    predict.classesval <- ifelse(probabilities > 0.5, 1, 0)
-
-    ## Accuracy in validation sample
+    
+    
+    # y calculated as the correct predictions in the validation sample
+    probabilities <-predict(logreg, newdata = valsample, type = 'prob')$Admission
+    predict.classesval <- ifelse(probabilities > 0.5, 'Admission', 'No admission')
+    
     y <- mean(predict.classesval == valsample$`ICU admission`) * 100
 
     ## Assign data "origin" as new variable and combine data
@@ -99,19 +119,23 @@ estimate_performance <- function(strata.combination, strata, df) {
     df_pooled <- rbind(devsample, valsample)
 
     ## Create propensity model
-    logregi <- glm(`devval` ~ `Age` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` + `Respiratory rate (per min)`, data = df_pooled, family = binomial)
+    logregi <- glm(`devval` ~ `Age` + `Systolic blood pressure (mm Hg)` + `Pulse (bpm)` + `Temperature (°C)` + `Peripheral oxygen saturation (%)` + `Respiratory rate (per min)`, 
+                   data = df_pooled, family = binomial)
     probabilities <- logregi %>% predict(df_pooled, type = "response")
     predict.classespool <- ifelse(probabilities > 0.5, 1, 0)
 
     ## Identify the segment of observation in the development data that
     ## are "most similar" to the observations in the validation data
     missmatch <- predict.classespool == 0 & df_pooled$devval == 1
-    df_segment <-devsample[missmatch, ]
+    df_segment <- devsample[missmatch, ]
 
-    ## Accuracy in segment
-    probabilities <- logreg %>% predict(df_segment, type = "response")
-    predict.classessegment <- ifelse(probabilities > 0.5, 1, 0)
-
+    # z calculated as the correct predictions in the segment created
+    df_segment$`ICU admission`[df_segment$`ICU admission` == 1] <- 'Admission'
+    df_segment$`ICU admission`[df_segment$`ICU admission` == 0] <- 'No admission'
+    
+    probabilities <- predict(logreg, newdata = df_segment, type = 'prob')$Admission
+    predict.classessegment <- ifelse(probabilities > 0.5, 'Admission', 'No admission')
+    
     z <- mean(predict.classessegment == df_segment$`ICU admission`) * 100
 
     ## Redefined some of these measures. Now a positive diff_diff
@@ -146,8 +170,9 @@ estimate_performance <- function(strata.combination, strata, df) {
                pe_diff_diff = pe_diff_diff)
     return (stats)
 }
+listdf <- c()
 
-## This function runs one simulation
+## This function runs one simulation, and returns all accuracys and differences along with the dataframe simulated
 run_simulation <- function(raw.data, strata, strata.combinations, outcome, predictors, size = 10000) {
     df <- create_simulated_dataset(raw.data, strata, outcome, predictors, size = size)
     new.colnames <- c(strata = "Country",
@@ -160,13 +185,8 @@ run_simulation <- function(raw.data, strata, strata.combinations, outcome, predi
                       y = "ICU admission")
     df <- df[names(new.colnames)]
     colnames(df) <- new.colnames
-    df$`ICU admission`[df$`ICU admission` == 1] <- 'Yes'
-    df$`ICU admission`[df$`ICU admission` == 0] <- 'No'
     strata <- "Country"
     vars <- colnames(df)[!(colnames(df) %in% strata)]
-    ## Pctable <- CreateTableOne(vars = vars, data = df, strata = strata, test = FALSE)
-    df$`ICU admission`[df$`ICU admission` == 'Yes'] <- 1
-    df$`ICU admission`[df$`ICU admission` == 'No'] <- 0
     df$`ICU admission` <- as.numeric(df$`ICU admission`)
     df_USA <- df[df$Country == "USA", ]
     df_France <- df[df$Country == "France", ]
@@ -174,10 +194,13 @@ run_simulation <- function(raw.data, strata, strata.combinations, outcome, predi
     performance.estimates <- lapply(strata.combinations, estimate_performance, strata = strata, df = df)
     names(performance.estimates) <- sapply(strata.combinations, paste0, collapse = ".to.")
     results <- unlist(performance.estimates)
+    results <- c(results, data.frame(df))
     return (results)
+
 }
 
-## Okay, so instead of creting one simulated dataset and bootstrapping
+
+## Okay, so instead of creating one simulated dataset and bootstrapping
 ## that I've revised the code to repeat the simulation process
 ## multiple times and then using the mean across simulations as the
 ## point estimate and the 2.5% and 97.5% percentiles as measures of
@@ -196,6 +219,17 @@ simulation.results <- lapply(seq_len(n.simulations), function(i) run_simulation(
                                                                      outcome = outcome,
                                                                      predictors = predictors,
                                                                      size = size))
+
+# This gives us the dataframe for each of the simulations and the accuracys in (simulation.restults1 and list.simulated.dfs) 
+list.simulated.dfs <- data.frame()
+simulation.results1 <- c()
+for (i in 1:n.simulations) {
+    simulation.results1 <- c(simulation.results1, list(unlist(simulation.results[[i]][1:36])))
+    list.simulated.dfs <- rbind(list.simulated.dfs, simulation.results[[i]][37:44] %>% as.data.frame())
+}
+
+#accuracys as we did before
+simulation.results <- simulation.results1
 simulation.data <- do.call(rbind, simulation.results)
 pe <- colMeans(simulation.data)
 cis <- lapply(as.data.frame(simulation.data), function(x) {
@@ -204,6 +238,18 @@ cis <- lapply(as.data.frame(simulation.data), function(x) {
     c(lb = quantiles[1], ub = quantiles[2])
 }) %>% as.data.frame() %>% t()
 pes.with.cis <- cbind(pe, cis) %>% as.data.frame() %>% split(f = as.factor(rownames(cis)))
+
+# Creating a tableone for all simulated dataframes
+colnames(list.simulated.dfs) <- c('Country', 'Age', 'Respiratory rate (per min)', 'Peripheral oxygen saturation (%)', 
+                                  'Systolic blood pressure (mm Hg)', 'Pulse (bpm)', 'Temperature (°C)', 'ICU admission')
+
+list.simulated.dfs$`ICU admission`[list.simulated.dfs$`ICU admission` == 1] <- 'Admission'
+list.simulated.dfs$`ICU admission`[list.simulated.dfs$`ICU admission` == 0] <- 'No admission'
+
+strata <- "Country"
+vars <- colnames(list.simulated.dfs)[!(colnames(list.simulated.dfs) %in% strata)]
+
+Pctablesim <- CreateTableOne(vars = vars, data = list.simulated.dfs, strata = strata, test = FALSE, addOverall = TRUE)
 
 #function for plotting jitterplot+errorbars, n = (1,2,3,4,5,6), each number for specific accuracy (dev, tval, pval, tval-dev, pval-dev, diffdiff)
 jitterplot <- function(n) {
@@ -244,9 +290,9 @@ jitterplot <- function(n) {
     
     #new xlabels and y labes
     newxlabels <- c('France to USA', 'Switzerland to USA', 'USA to France', 'Switzerland to France', 'USA to Switzerland', 'France to Switzerland')
-    newylabels <- c('Development sample accuracy', 
-                    'True validation accuracy', 
-                    'Predicted validation accuracy', 
+    newylabels <- c('Development sample performance (%)', 
+                    'True validation performance (%)', 
+                    'Predicted validation performance (%)', 
                     'Naive approach absolute difference',
                     'Segmented approach absolute difference',
                     'Difference between naive and segmented approach')
@@ -261,7 +307,7 @@ jitterplot <- function(n) {
         ylab(newylabels[n]) +
         coord_flip() +
         theme_test() 
-        if (n >= 4) {
+        if (n >= 6) {
             p <- p + geom_hline(yintercept = 0, alpha = 0.4)
             p <- p + geom_text(data = tempdf, aes(x = Transfers, y = ppe, label = Significance), nudge_x = 0.3, alpha = 0.015)
         }
@@ -269,15 +315,6 @@ jitterplot <- function(n) {
     return(p)
     
 }
-#plotting jitter plots
-
-#jitterplot(1)
-#jitterplot(2)
-#jitterplot(3)
-#jitterplot(4)
-#jitterplot(5)
-#jitterplot(6)
-
 
 #function for returning tableplots
 dftable <- function(n) {
@@ -335,7 +372,6 @@ dftable <- function(n) {
 
 
 #kableone(Pctable)
-
 ```
 
 # Introduction
