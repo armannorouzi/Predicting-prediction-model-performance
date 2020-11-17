@@ -476,7 +476,7 @@ The method developed in this study will be made without the intention of harm, i
 Due to this study being analytical, the principle of justice does not prevail. However, the data in the study will be treated equally.
 
 ### Ethical permit
-Because of this study being analytical and based on a freely reusable and public database, the need for an ethical permit was not required.
+No ethical permit was required because this study used a public database.
 
 # Results
 ## Original Sample description
@@ -494,8 +494,8 @@ kableone(Pctablesim, caption = 'Baseline characteristics of the simulated sample
 ```
 
 ## Development sample performance
-When assessing the predictive performance within the development sample for each transfer combination, we found the mean predictive performance to be 
-`r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All development sample performances, mean performances and CI for each transfer combination are shown in figure 1.
+<!-- The accuracies in the development samples are independent of the transfers, so I suggest that you present these data by only referring to the name of the development setting, rather than the transfer. Also, refer to the predictive performance as accuracy, because that's what we are looking at. -->
+The mean accuracy in each development sample were `r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All development sample performances, mean performances and CI for each transfer combination are shown in figure 1.
 
 ```{r, echo = FALSE, fig.cap = 'Development sample performances as percantage for transfer combinations. Each black dot represents the development sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI'}
 jitterplot(1)
@@ -550,7 +550,7 @@ jitterplot(1)
 ```
 
 ## True validation sample performance
-When assessing the true predictive performance within the validation sample for each transfer combination, we found the mean predictive performance to be 
+When assessing the true predictive performance within the validation sample for each transfer combination <!-- This is a rather roundabout way to express what you really want to say: The accuracy in each validation sample. I suggest that you try to cut down on the extra words and write more direct -->, we found the mean predictive performance to be 
 `r dftable(1)[[2]][2]` % (95% CI `r round(cis[2],2)` to `r round(cis[2+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][2]` % (95% CI `r round(cis[2+6],2)` to `r round(cis[2+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][2]` % (95% CI `r round(cis[2+12],2)` to `r round(cis[2+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][2]` % (95% CI `r round(cis[2+18],2)` to `r round(cis[2+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][2]` % (95% CI `r round(cis[2+24],2)` to `r round(cis[2+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][2]` % (95% CI `r round(cis[2+30],2)` to `r round(cis[2+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All true validation sample performances, mean performances and CI for each transfer combination are shown in figure 2.
 
 
