@@ -542,3 +542,10 @@ We found statistically worse performance in the segmented approach than in the n
 ```{r, echo = FALSE, fig.cap = 'Error differences between the naive approach and the segmented approach for all transfer combinations. Each black dot represents the error difference between the naive and the segmented approach for one simulated sample with the red dot representing the mean error difference across all simulations. The bars indicat the 95% CI. Asterisk (*) above the mean error difference indicate significance.'}
 jitterplot(6)
 ```
+# Discussion
+The aim of this study was to develop and test a method that can predict the predictive performance of a prediction model after transfer utilizing unlabeled data. We were able to develop such a method, but when we tested the method, the quality of the predictions that were made varied. We found that that the methods predicted accuracy, in two out of six simulated transfers, were a better prediction of the validation sample accuracy than the development sample accuracy. This however was not the case in the remaining four simulated transfers, where the development sample accuracy was a better prediction of the validation sample accuracy than the methods predicted accuracy.
+
+## Strengths and limitations
+## Clinical/practical applications
+## Future studies
+# Conclusions
