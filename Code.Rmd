@@ -151,8 +151,8 @@ estimate_performance <- function(strata.combination, strata, df) {
     pe_dev <- x
     pe_tval <- y
     pe_pval <- z
-    pe_tval_dev <- abs(y - x)
-    pe_pval_dev <- abs(z - x)
+    pe_tval_dev <- abs(x - y)
+    pe_pval_dev <- abs(z - y)
     pe_diff_diff <- pe_tval_dev - pe_pval_dev 
 
     ## We are interested in the "error" associated with each
@@ -381,7 +381,7 @@ dftable <- function(n) {
 #kableone(Pctable)
 ```
 # Introduction
-In medicine, healthcare professionals are daily confronted with a wide range of information that needs to be processed in order to make informed clinical decisions. To help healthcare professionals make such informed decisions, prediction models (also referred to as prediction score or prediction rules) have been implemented in healthcare [@steyerberg2013prognosis] [@moons2009prognosis]. These prediction models can be defined as statistical algorithms that predict the risk of a specific outcome in an individual [@moons2009prognosis] [@collins2015transparent]. The prediction models are capable of this task due to being trained in finding patterns in predictor data that has been labelled with outcome. These patterns can then be used in order to predict outcome based on new unlabelled predictor data [@deo2015machine].
+In medicine, healthcare professionals are daily confronted with a wide range of information that needs to be processed in order to make informed clinical decisions. To help healthcare professionals make such informed decisions, prediction models (also referred to as prediction score or prediction rules) have been implemented in healthcare [@steyerberg2013prognosis] [@moons2009prognosis]. These prediction models can be defined as statistical algorithms that predict the risk of a specific outcome in an individual [@moons2009prognosis] [@collins2015transparent]. The prediction models are capable of this task due to being trained in finding patterns in predictor data that has been labeled with outcome. These patterns can then be used in order to predict outcome based on new unlabeled predictor data [@deo2015machine].
 
 The risk that is predicted by the prediction models is generally based on multiple predictors and the outcome could either be a disease (diagnostic model) or an event that will occur in the future (prognostic model) [@collins2015transparent] [@riley2013prognosis]. In the diagnostic model, the predicted risk can be used to reassure the patient that their symptoms are not caused by a serious disease, refer the patient to further testing or to initiate treatment [@collins2015transparent]. A great example of a diagnostic model is the Ottawa Ankle Rules. This prediction model helps healthcare professionals by predicting the risk of a fracture in the ankle or the foot, in patients with acute ankle injuries. To predict this risk, the prediction model utilizes predictor data such as bone tenderness at different locations and the inability to bear weight on the injured foot immediately after injury and in the emergency department (ED). Based on the predicted risk, the healthcare professionals can decide whether the patient is in need of x-ray imaging [@shell1993decision].
 
@@ -389,36 +389,34 @@ In the prognostic model, the predicted risk can be used to choose between therap
 
 There are many uses for prediction models within the fields of medicine, where the Ottawa Ankle Rules and the CHA2DS-VASc score are just a few examples that have been implemented in clinical practice. In order to develop and implement such useful models within healthcare, a few steps are needed to be carried out. These steps include model development studies, model validation studies and model impact studies [@royston2009prognosis] [@moons2012risk].
 
-In the first step consisting of the model development study, the aim is to develop a prediction model [@royston2009prognosis]. The prediction model is developed by selecting a statistical algorithm and a development sample. There are a couple of algorithms to choose from, but usually when the development sample is limited, a simpler algorithm is utilized such as logistic regression [@deo2015machine]. The development sample consists of relevant outcome labelled predictor data, which is used to train the algorithm in finding patterns between the outcomes and the predictors [@deo2015machine] [@royston2009prognosis]. When the algorithm has been trained, it usually tends to be optimistic in its predictive performance when predicting outcome in the development sample [@steyerberg2003internal]. It is therefore important to quantify such optimism through internal validation techniques [@steyerberg2009practical]. The quantified optimism can thereafter be adjusted for by applying shrinkage or penalization to the model [@steyerberg2001application].
+In the first step consisting of the model development study, the aim is to develop a prediction model [@royston2009prognosis]. The prediction model is developed by selecting a statistical algorithm and a development sample. There are a couple of algorithms to choose from, but usually when the development sample is limited, a simpler algorithm is utilized such as logistic regression [@deo2015machine]. The development sample consists of relevant outcome labeled predictor data, which is used to train the algorithm in finding patterns between the outcomes and the predictors [@deo2015machine] [@royston2009prognosis]. When the algorithm has been trained, it usually tends to be optimistic in its predictive performance when predicting outcome in the development sample [@steyerberg2003internal]. It is therefore important to quantify such optimism through internal validation techniques [@steyerberg2009practical]. The quantified optimism can thereafter be adjusted for by applying shrinkage or penalization to the model [@steyerberg2001application].
 
-In the second step consisting of the model validation study, the aim is to assess the predictive performance of the prediction model within a validation sample. The validation sample consists of new individuals, with outcome labelled predictor data, that differ in various ways from the individuals in the development sample. These individuals may differ in the time in which their data were collected (temporal validation) or from which country or hospital their data were collected (geographical validation). The latter validation technique assesses the transportability of the prediction model. Such external validation is important to perform, due to internally validated prediction models tendency to perform worse in new sets of individuals. If the performance is poor within the validation sample, the model is of no value [@moons2012risk].
+In the second step consisting of the model validation study, the aim is to assess the predictive performance of the prediction model within a validation sample. The validation sample consists of new individuals, with outcome labeled predictor data, that differ in various ways from the individuals in the development sample. These individuals may differ in the time in which their data were collected (temporal validation) or from which country or hospital their data were collected (geographical validation). Geographical validation assesses how well the prediction model performs when the model is transferred from one hospital/country to another. Such external validation is important, due to internally validated prediction models tendency to perform worse in new sets of individuals. If the performance is poor within the validation sample, the model is of no value [@moons2012risk].
 
-In the third and final step consisting of the model impact study, the aim is to assess the prediction models impact, ideally in a randomised trial. The impact of the model is assessed in variables such as decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care. These impact studies are carried out to prove that the prediction model is of value in clinical practice [@moons2012risk].
+In the third and final step consisting of the model impact study, the aim is to assess the prediction models impact, ideally in a randomized trial. The impact of the model is assessed in variables such as decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care. These impact studies are carried out to prove that the prediction model is of value in clinical practice [@moons2012risk].
 
-Carrying out these prediction model studies can be complex as problems may arise during the time in which they are carried out. One such problem may occur during the model validation study. In this study, in order to obtain the predictive performance of the prediction model within the validation sample, available predictor and outcome data is needed from that sample [@moons2012risk]. This data is not always available retrospectively and can present a problem that is both time inefficient and expensive, if the data is difficult to access when collecting it prospectively. 
+Carrying out these prediction model studies can be complex as problems may arise during the time in which they are carried out. One such problem may occur during the model validation studies. In these studies, in order to obtain the predictive performance of the prediction model within the validation sample, available predictor and outcome data is required from the validation sample [@moons2012risk]. This data is not always available retrospectively and can present a problem that is both time inefficient and expensive, if the data is difficult to access when collecting it prospectively. 
 
-This specific problem would present itself if data for the Framingham Risk Score were to be collected prospectively, in order to perform a model validation study. The predictor data in this prediction model are cheap blood samples and simple demographics while the outcome data is cardiovascular disease within 10 years [@anderson1991cardiovascular]. The predictor data for this prediction model may be easily accessible. But the outcome data is only accessible after 10 years of follow up. Due to the difficulties in collecting the outcome data prospectively, this specific problem would be presented.
+This specific problem would present itself if data for the Framingham Risk Score were to be collected prospectively, in order to perform a model validation study. The predictor data in this prediction model are cheap blood samples and simple demographics while the outcome data is cardiovascular disease within 10 years [@anderson1991cardiovascular]. The predictor data for this prediction model may be easily accessible but the outcome data is only accessible after 10 years of follow up. Due to the difficulties in collecting the outcome data prospectively, this specific problem would be presented.
 
-It would therefore be desirable to have a method that can estimate the predictive performance of a prediction model when it is transferred by only utilizing unlabelled predictor data from the validation sample. Such a method could in theory, simplify the process of implementing prediction models in clinical practice and therefore indirectly improve decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care. At present, no such methods exist which presents a substantial knowledge gap. Therefore, the aim of this study was to develop and test a new method for predicting prediction model performance after transfer while using unlabelled data.
+It would therefore be desirable to have a method that can predict the predictive performance of a prediction model, after it has been transferred, by only utilizing unlabeled predictor data from the validation sample. Such a method could in theory, simplify the process of implementing prediction models in clinical practice and therefore indirectly improve decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care. At present, no such studies nor methods exists which presents a substantial knowledge gap. Therefore, the aim of this study was to develop and test a new method for predicting prediction model performance after transfer utilizing unlabeled data.
 
 # Aim
-The aim of this study was to develop and test a new method for predicting prediction model performance after transfer using unlabelled data. 
-
-The hypothesis was that the new method, which uses a segmented approach, will have a performance that is higher or as good as current naive ways of assessing the predictive performance within the validation sample. This hypothesis was based on the fact that the prediction model, which is developed with the development sample, is the one predicting the predictive performance within the validation sample by predicting outcome in the segmented sample. This segmented sample consists of selected data from the development sample which should in theory lead to an optimistic performance.
+The aim of this study was to develop and test a new method for predicting prediction model performance after transfer utilizing unlabeled data. 
 
 # Methods and Materials
 ## Study design
 The study design was an analytical registry based study. To perform the analysis, a dataset was used that has been made freely reusable by the multinational observational study by Eckert A et al in the Dryad Digital Repository [@eckart2019combination] (18). This dataset was chosen due to consisting of patient data from different countries with available patient parameters that can be linked to a patient outcome.
 
 ## Participants
-The participants enrolled in the dataset were all patients seeking ED care between March 2013 and October 2014 within three tertiary care centers in the USA (Clearwater Hospital), France (Hôspital de la Salpêtrière) and Switzerland (Kontonsspital Aaura). The data that was registered for each participant included the hospital and country that the patient seeked, vital signs, laboratory assessments, age, discharge location, length of stay, intensive care unit (ICU) admission and death within 30 days. The inclusion criteria to be enrolled in the dataset was that an initial blood sample was taken. The exclusion criteria were paediatric or surgical patient [@eckart2019combination].
+The participants enrolled in the dataset were all patients seeking ED care between March 2013 and October 2014 within three tertiary care centers in the USA (Clearwater Hospital), France (Hôspital de la Salpêtrière) and Switzerland (Kontonsspital Aaura). The data that was registered for each participant included the hospital and the country in which the patient seeked ED care, vital signs, laboratory assessments, age, discharge location, length of stay, intensive care unit (ICU) admission and death within 30 days. The inclusion criteria to be enrolled in the dataset was that an initial blood sample was taken. The exclusion criteria were pediatric or surgical patient [@eckart2019combination].
 
 ## Variables
 ### Model predictors
-The model predictors that were used to develop prediction models and simulate new data in the statistical analysis included respiratory rate (per min), peripheral oxygen saturation (%), systolic blood pressure (mm Hg), heart rate (beats per min), temperature (°C) and age. How these variables were measured was not mentioned in the original study that publicized them. These variables were chosen at random.
+The model predictors that were used from the dataset, in order to develop prediction models and simulate new model predictors in the statistical analysis, included respiratory rate (per min), peripheral oxygen saturation (%), systolic blood pressure (mm Hg), heart rate (bpm), temperature (°C) and age. These variables were selected due to being continuous. How these variables were measured was not mentioned in the study that publicized them.
 
 ### Model outcomes
-The model outcomes that were used to develop prediction models in the statistical analysis included ICU admission and the country from which the patient seeked ED care. ICU admission was chosen as the outcome for the prediction model due being more frequent than death within 30 days.
+The model outcomes that were used from the dataset, in order to to develop prediction models and simulate new model outcomes in the statistical analysis included ICU admission and the country from which the patient seeked ED care. ICU admission was chosen as the outcome for the prediction model due being more frequent than death within 30 days.
 
 ### Sample size
 The final sample size used in this study was 1303 participants which included all of the participants from the dataset.
@@ -428,52 +426,52 @@ Because of the dataset already being filtered to mostly containing no missing da
 
 ## Statistical analysis
 ### Dataset
-The dataset previously mentioned in the study design was divided based on the country from which the participants seeked ED care which resulted in three different samples (USA sample, France sample and Switzerland sample)
+The dataset previously mentioned in the study design was divided based on the country from which the participants seeked ED care (USA sample, France sample and Switzerland sample).
 
 ### Sequence of analysis
-Analysis in this study was performed in the programming language R (19). The sequence of analysis performed were sample simulation, sample assignment, prediction model development, development sample performance, true validation sample performance, propensity model development, predicted validation sample performance and approach comparison.
+Analysis in this study was performed in the programming language R (19). The cutoff level for all of the prediction models were set to 0.5. The sequence of analysis performed were sample simulation, sample assignment, prediction model development, development sample accuracy, validation sample accuracy, propensity model development, predicted validation sample accuracy and approach comparison. 
 
 ### Sample simulation
-To increase the number of participants in the samples, 10000 new participants were simulated for each of the divided samples. The process of simulation included a model predictor simulation and a model outcome simulation. The model predictors that were used to simulate new model predictors included respiratory rate, peripheral oxygen saturation, systolic blood pressure, heart rate, temperature and age from the divided samples. The model outcome that was used to simulate new model outcomes included ICU admission from the divided samples.
+To increase the number of participants in the samples, 10000 new participants were simulated for each of the divided samples. The process of simulation included a model predictor simulation and a model outcome simulation. The model predictors that were used to simulate new model predictors included respiratory rate, peripheral oxygen saturation, systolic blood pressure, heart rate, temperature and age from the divided samples. The model outcomes that was used to simulate new model outcomes included ICU admission from the divided samples.
 
-To simulate new model predictors for one of the divided samples, the mvrnorm function implemented in the MASS package was used (20). The function utilized the mean and the covariance of the model predictors in the divided sample to simulate new model predictors. To simulate new model outcomes for the simulated model predictors, the glm function implemented in R was used to develop a logistic regression model (21). This model was trained with the model predictors and model outcome from the divided sample. The model was then used to predict outcome based on the simulated model predictors. These predictions were set as the outcome for the simulated model predictors in order to create simulated samples. This simulation process was performed for each of the divided samples.
+To simulate new model predictors for one of the divided samples, the mvrnorm function implemented in the MASS package was used (20). The function utilized the mean and the covariance of the model predictors in the divided sample to simulate new model predictors. To simulate new model outcomes for the simulated model predictors, the glm function implemented in R was used to develop a logistic regression model (21). This model was trained with the model predictors and model outcomes from the divided sample. The model was then used to predict outcome based on the simulated model predictors. These predictions were set as the outcomes for the simulated model predictors in order to create simulated samples. The model predictor and model outcome simulation were performed for each of the divided samples until three simulated samples were developed.
 
 ### Sample assignment
-To simulate the transfer of a prediction model from one country to another, one of the simulated samples, that including simulated model predictors and model outcomes, was noted as the development sample while one of the two remaining simulated samples was noted as the validation sample. The development sample represented data from the country in which the prediction model was created, while the validation sample represented data from the country in which the prediction model was transferred to.
+To simulate the transfer of a prediction model from one country to another, one of the simulated samples was noted as the development sample while one of the two remaining simulated samples was noted as the validation sample. The development sample represented data from the country in which the prediction model was created, while the validation sample represented data from the country in which the prediction model was transferred to.
 
 ### Prediction model development
-In the prediction model development step, a prediction model was developed by training a logistic regression model with the development sample. To adjust for optimism, cross-validation techniques were used to chose the simplest model within one standard error of the best model. The cross-validation technique was based on a 80% training and 20% testing. The model predictors that were used to train the model included respiratory rate, peripheral oxygen saturation, systolic blood pressure, heart rate, temperature and age. The model outcome that was used to train the model included ICU admission.
+In the prediction model development step, a prediction model was developed by training a logistic regression model with the development sample. To adjust for optimism, cross-validation to chose the simplest model within one standard error from the best model. The cross-validation technique was based on a 80% training and 20% testing split of the development sample with five folds. The model predictors that were used to train the model included respiratory rate, peripheral oxygen saturation, systolic blood pressure, heart rate, temperature and age. The model outcome that was used to train the model included ICU admission.
 
-### Development sample performance
-To assess the predictive performance of the prediction model within the country it was developed, the model developed in the prediction model development step was used to predict outcome within the development sample.
+### Development sample accuracy
+To assess the predictive performance of the prediction model within the country that it was developed in, the model developed in the prediction model development step was used to predict outcome within the development sample. The predictions where then compared with the true outcomes in the development sample in order to acquire the accuracy of the model within the development sample.
 
-### True validation sample performance
-To assess the true performance of the prediction model within the country it was transferred to, the model developed in the prediction model development step was used to predict outcome within the validation sample.
+### Validation sample accuracy
+To assess the predictive performance of the prediction model within the country to which it was transferred to, the model developed in the prediction model development step was used to predict outcome within the validation sample. The predictions where then compared with the true outcomes in the validation sample in order to acquire the accuracy of the model within the validation sample.
 
 ### Propensity model development
 In the propensity model development step, the data from the development sample and the validation sample were pooled into one sample. This aggregated sample was then used to develop a propensity model, also a prediction model, using logistic regression. The propensity model was then used to predict from which sample the data in the aggregated sample originated from. Observations from the development sample that were missclassified as validation observations, were used to create a segmented sample. The model predictors that were used to train the propensity model included respiratory rate, peripheral oxygen saturation, systolic blood pressure, heart rate, temperature and age. The model outcome that was used to train the propensity model was the country in which the participant seeked ED care.
 
-### Predicted validation sample performance
-To assess the predicted performance of the prediction model within the country it was transferred to, the model developed in the prediction model development step was used to predict outcome within the segmented sample.
+### Predicted validation sample accuracy
+To assess the predicted predictive performance of the prediction model within the country it was transferred to, the model developed in the prediction model development step was used to predict outcome within the segmented sample created in the propensity model development step. The predictions where then compared with the true outcomes in the segmented sample in order acquire the predicted validation sample accuracy.
 
 ### Approach comparison
-To assess the performance of the naive approach, the absolute difference between the development sample performance step and the true validation sample performance step was calculated. To assess the performance of the segmented approach, the absolute difference between the predicted validation performance step and the development sample performance step was calculated. To assess which approach performed best, the difference between the naive approach and the segmented approach was calculated.
+To assess the errors in the "naive approach", the absolute difference between the accuracies acquired in the development sample accuracy step and the validation sample accuracy step were calculated. To assess the error in the "segmented approach", the absolute difference between the accuracies acquired in the predicted validation sample accuracy step and the validation sample accuracy step were calculated. To assess which approach performed best, the difference between the naive approaches and the segmented approaches were calculated.
 
 ### Sequence repetition
-To obtain 95% confidence intervals (CI) around the performances and the differences, the sequence of analysis will be repeated 1000 times. These repetitions will be performed for each available combination in the sample assignment step assignment step.
+To obtain 95% confidence intervals (CI) around the accuracies and the differences, the sequence of analysis will be repeated 1000 times. These repetitions were performed for each available combination in the sample assignment step.
 
 ## Ethical considerations
 ### Principle of autonomy
 The dataset that was used in this study has been made freely reusable in Dryad Digital Repository (18). Therefore, the principle of autonomy is upheld due to there not being any requirement for informed consent.
 
 ### Principle of beneficence
-This study attempted to act in the best interest of future analytical research and patients, by developing and testing a new method for predicting prediction model performance after transfer using unlabelled data. Such a method could in theory, simplify the process of implementing prediction models in clinical practice and therefore indirectly improve decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care.
+This study attempted to act in the best interest of future analytical research and patients, by developing and testing a new method for predicting prediction model performance after transfer utilizing unlabeled data. Such a method could in theory, simplify the process of implementing prediction models in clinical practice and therefore indirectly improve decision making changes in healthcare professionals, patient health outcomes and/or cost-effectiveness of care.
 
 ### Principle of nonmaleficence
-The method developed in this study will be made without the intention of harm, intentionally or unintentionally. To nullify the risk of patient identification leakage, we used a dataset that has already been depersonalized and made freely reusable. By taking these actions we determine that the risk to the population was minimal.
+The method developed in this study will be made without the intention of harm, intentionally or unintentionally. To nullify the risk of patient identification leakage, we used a dataset that has already been depersonalized and made freely reusable. By taking these actions we determined that the risk to the population was minimal.
 
 ### Principle of justice
-Due to this study being analytical, the principle of justice does not prevail. However, the data in the study will be treated equally.
+Due to this study being analytical, the principle of justice does not prevail. However, the data in the study was treated equally.
 
 ### Ethical permit
 No ethical permit was required because this study used a public database.
@@ -493,98 +491,54 @@ With the 1303 participants in the original sample, `r length(list.simulated.dfs$
 kableone(Pctablesim, caption = 'Baseline characteristics of the simulated sample used in the final analysis stratified by country.')
 ```
 
-## Development sample performance
-<!-- The accuracies in the development samples are independent of the transfers, so I suggest that you present these data by only referring to the name of the development setting, rather than the transfer. Also, refer to the predictive performance as accuracy, because that's what we are looking at. -->
-The mean accuracy in each development sample were `r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All development sample performances, mean performances and CI for each transfer combination are shown in figure 1.
+## Development sample accuracies
+We found the mean accuracy within the development sample to be 
+`r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within `r strata.combinations[[5]][1]`, 
+`r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within `r strata.combinations[[3]][1]`, 
+`r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within `r strata.combinations[[2]][1]`, 
+`r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within `r strata.combinations[[4]][1]`,
+`r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within `r strata.combinations[[1]][1]`,
+`r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within `r strata.combinations[[6]][1]`.
+All development sample accuracies with the mean accuracy and CI for each country are shown in figure 1.
+*OBS dubbla, måste ta bort från jitterplot och fixa till så det ser rätt ut*
 
-```{r, echo = FALSE, fig.cap = 'Development sample performances as percantage for transfer combinations. Each black dot represents the development sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI'}
+```{r, echo = FALSE, fig.cap = 'Development sample accuracies in each development sample. Each black dot represents the development sample accuracy in one simulated sample with the red dot representing the mean accuracy across all simulations. The bars indicate the 95% CI'}
 jitterplot(1)
-
-#ordning i dftable
-#dftable(1)
-#dftable(1)[[2]][1]
-
-#strata.combinations[[1]][1]
-#strata.combinations[[1]][2]
-
-#dftable(2)
-#strata.combinations[[2]][1]
-#strata.combinations[[2]][2]
-
-#dftable(3)
-#strata.combinations[[3]][1]
-#strata.combinations[[3]][2]
-
-#dftable(4)
-#strata.combinations[[4]][1]
-#strata.combinations[[4]][2]
-
-#dftable(5)
-#strata.combinations[[5]][1]
-#strata.combinations[[5]][2]
-
-#dftable(6)
-#strata.combinations[[6]][1]
-#strata.combinations[[6]][2]
-
-#ordningen i jitterplot
-#strata.combinations[[5]][1]
-#strata.combinations[[5]][2]
-
-#strata.combinations[[3]][1]
-#strata.combinations[[3]][2]
-
-#strata.combinations[[2]][1]
-#strata.combinations[[2]][2]
-
-#strata.combinations[[4]][1]
-#strata.combinations[[4]][2]
-
-#strata.combinations[[1]][1]
-#strata.combinations[[1]][2]
-
-#strata.combinations[[6]][1]
-#strata.combinations[[6]][2]
-
-#strata.combinations
 ```
 
-## True validation sample performance
-When assessing the true predictive performance within the validation sample for each transfer combination <!-- This is a rather roundabout way to express what you really want to say: The accuracy in each validation sample. I suggest that you try to cut down on the extra words and write more direct -->, we found the mean predictive performance to be 
-`r dftable(1)[[2]][2]` % (95% CI `r round(cis[2],2)` to `r round(cis[2+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][2]` % (95% CI `r round(cis[2+6],2)` to `r round(cis[2+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][2]` % (95% CI `r round(cis[2+12],2)` to `r round(cis[2+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][2]` % (95% CI `r round(cis[2+18],2)` to `r round(cis[2+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][2]` % (95% CI `r round(cis[2+24],2)` to `r round(cis[2+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][2]` % (95% CI `r round(cis[2+30],2)` to `r round(cis[2+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All true validation sample performances, mean performances and CI for each transfer combination are shown in figure 2.
+## Validation sample accuracies
+We found the mean accuracy within the validation sample to be `r dftable(5)[[2]][2]` % (95% CI `r round(cis[2+24],2)` to `r round(cis[2+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(3)[[2]][2]` % (95% CI `r round(cis[2+12],2)` to `r round(cis[2+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(2)[[2]][2]` % (95% CI `r round(cis[2+6],2)` to `r round(cis[2+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(4)[[2]][2]` % (95% CI `r round(cis[2+18],2)` to `r round(cis[2+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(1)[[2]][2]` % (95% CI `r round(cis[2],2)` to `r round(cis[2+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer and `r dftable(6)[[2]][2]` % (95% CI `r round(cis[2+30],2)` to `r round(cis[2+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All true validation sample accuracies with mean accuracy and CI are shown in figure 2 for each transfer combination.
 
-
-```{r, echo = FALSE, fig.cap = 'True validation sample performances as percantage for all transfer combinations. Each black dot represents the true validation sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI.'}
+```{r, echo = FALSE, fig.cap = 'Validation sample accuracies for all transfer combinations. Each black dot represents the validation sample accuracy in one simulated sample with the red dot representing the mean accuracy across all simulations. The bars indicate the 95% CI.'}
 jitterplot(2)
 ```
 
-## Predicted validation sample performance
-When assessing the predicted predictive performance within the validation sample for each transfer combination, we found the mean predictive performance to be 
-`r dftable(1)[[2]][3]` % (95% CI `r round(cis[3],2)` to `r round(cis[3+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][3]` % (95% CI `r round(cis[3+6],2)` to `r round(cis[3+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][3]` % (95% CI `r round(cis[3+12],2)` to `r round(cis[3+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][3]` % (95% CI `r round(cis[3+18],2)` to `r round(cis[3+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][3]` % (95% CI `r round(cis[3+24],2)` to `r round(cis[3+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][3]` % (95% CI `r round(cis[3+30],2)` to `r round(cis[3+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All predicted validation sample performances, mean performances and CI for each transfer combination are shown in figure 3.
+## Predicted validation sample accuracies
+We found the mean predicted validation sample accuracy to be `r dftable(5)[[2]][3]` % (95% CI `r round(cis[3+24],2)` to `r round(cis[3+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(3)[[2]][3]` % (95% CI `r round(cis[3+12],2)` to `r round(cis[3+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(2)[[2]][3]` % (95% CI `r round(cis[3+6],2)` to `r round(cis[3+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(4)[[2]][3]` % (95% CI `r round(cis[3+18],2)` to `r round(cis[3+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(1)[[2]][3]` % (95% CI `r round(cis[3],2)` to `r round(cis[3+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer and `r dftable(6)[[2]][3]` % (95% CI `r round(cis[3+30],2)` to `r round(cis[3+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All predicted validation sample accuracies with mean predicted accuracy and CI are shown in table 3 for each transfer combination.
 
-```{r, echo = FALSE, fig.cap = 'Predicted validation sample performances as percantage for all transfer combinations. Each black dot represents the predicted validation sample performance in one simulated sample with the red dot representing the mean performance across all simulations. The bars indicate the 95% CI.'}
+```{r, echo = FALSE, fig.cap = 'Predicted validation sample accuracies for all transfer combinations. Each black dot represents the predicted validation sample accuracy in one simulated sample with the red dot representing the mean accuracy across all simulations. The bars indicate the 95% CI.'}
 jitterplot(3)
 ```
 
-## Naive approach performance
-When assessing the naive approach performance for each transfer combination, we found the mean performance difference to be 
-`r dftable(1)[[2]][4]` % (95% CI `r round(cis[4],2)` to `r round(cis[4+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][4]` (95% CI `r round(cis[4+6],2)` to `r round(cis[4+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][4]` (95% CI `r round(cis[4+12],2)` to `r round(cis[4+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][4]` (95% CI `r round(cis[4+18],2)` to `r round(cis[4+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][4]` (95% CI `r round(cis[4+24],2)` to `r round(cis[4+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][4]` (95% CI `r round(cis[4+30],2)` to `r round(cis[4+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All naive approach differences, mean differences and CI for each transfer combination are shown in figure 4.
+## Error in naive approach
+We found the mean error in the naive approach to be `r dftable(5)[[2]][4]` (95% CI `r round(cis[4+24],2)` to `r round(cis[4+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(3)[[2]][4]` (95% CI `r round(cis[4+12],2)` to `r round(cis[4+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(2)[[2]][4]` (95% CI `r round(cis[4+6],2)` to `r round(cis[4+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(4)[[2]][4]` (95% CI `r round(cis[4+18],2)` to `r round(cis[4+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(1)[[2]][4]` % (95% CI `r round(cis[4],2)` to `r round(cis[4+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer and `r dftable(6)[[2]][4]` (95% CI `r round(cis[4+30],2)` to `r round(cis[4+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All errors in the naive approach with error means and CI are shown in figure 4 for each transfer combination.
 
-```{r, echo = FALSE, fig.cap = 'Naive approach absolute difference as percantage point for all transfer combinations. Each black dot represents the naive apporach absolute difference in one simulated sample with the red dot representing the mean difference across all simulations. The bars indicate the 95% CI.'}
+```{r, echo = FALSE, fig.cap = 'Errors in the naive approach for all transfer combinations. Each black dot represents the error in the naive apporach for one simulated sample with the red dot representing the mean error across all simulations. The bars indicate the 95% CI.'}
 jitterplot(4)
 ```
 
-## Segmented approach results
-When assessing the segmented approach performance for each transfer combination, we found the mean performance difference to be 
-`r dftable(1)[[2]][5]` (95% CI `r round(cis[5],2)` to `r round(cis[5+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, `r dftable(2)[[2]][5]` (95% CI `r round(cis[5+6],2)` to `r round(cis[5+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(3)[[2]][5]` (95% CI `r round(cis[5+12],2)` to `r round(cis[5+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(4)[[2]][5]` (95% CI `r round(cis[5+18],2)` to `r round(cis[5+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(5)[[2]][5]` (95% CI `r round(cis[5+24],2)` to `r round(cis[5+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(6)[[2]][5]` (95% CI `r round(cis[5+30],2)` to `r round(cis[5+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All segmented approach differences, mean differences and CI for each transfer combination are shown in figure 5.
+## Error in segmented approach
+We found the mean error in the segmented approach to be `r dftable(5)[[2]][5]` (95% CI `r round(cis[5+24],2)` to `r round(cis[5+36+24],2)`) within the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer, `r dftable(3)[[2]][5]` (95% CI `r round(cis[5+12],2)` to `r round(cis[5+36+12],2)`) within the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(2)[[2]][5]` (95% CI `r round(cis[5+6],2)` to `r round(cis[5+36+6],2)`) within the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(4)[[2]][5]` (95% CI `r round(cis[5+18],2)` to `r round(cis[5+36+18],2)`) within the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, `r dftable(1)[[2]][5]` (95% CI `r round(cis[5],2)` to `r round(cis[5+36],2)`) within the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer and `r dftable(6)[[2]][5]` (95% CI `r round(cis[5+30],2)` to `r round(cis[5+36+30],2)`) within the `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer. All errors in the segmented approach with mean error and CI are shown in figure 5 for each transfer combination.
 
-```{r, echo = FALSE, fig.cap = 'Segmented apporach absolute difference for all transfer combinations. Each black dot represents the segmented approach absolute difference in one simulated sample with the red dot representing the mean difference across all simulations. The bars indicate the 95% CI.'}
+```{r, echo = FALSE, fig.cap = 'Errors in the segmented apporach for all transfer combinations. Each black dot represents the error in the segmented approach for one simulated sample with the red dot representing the mean error for all simulations. The bars indicate the 95% CI.'}
 jitterplot(5)
 ```
 
 ## Approach comparison
-When assessing the performance difference between the naive approach and the segmented approach in the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer, the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer, the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` and `r strata.combinations[[6]][1]` to `r strata.combinations[[6]][2]` transfer, we found significantly higher performance in the segmented approach than the naive approach with a mean difference of `r dftable(1)[[2]][6]` (95% CI `r round(cis[6],2)` to `r round(cis[6+36],2)`), `r dftable(2)[[2]][6]` (95% CI `r round(cis[6+6],2)` to `r round(cis[6+36+6],2)`), `r dftable(4)[[2]][6]` (95% CI `r round(cis[6+18],2)` to `r round(cis[6+36+18],2)`), `r dftable(5)[[2]][6]` (95% CI `r round(cis[6+24],2)` to `r round(cis[6+36+24],2)`), `r dftable(6)[[2]][6]` (95% CI `r round(cis[6+30],2)` to `r round(cis[6+36+30],2)`) respectively. When assessing the performance difference between the naive approach and the segmented approach in the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, we found no significant performance difference between the naive approach and the segmented approach with a mean difference of `r dftable(3)[[2]][6]` (95% CI `r round(cis[6+12],2)` to `r round(cis[6+36+12],2)`). 
+We found statistically better performance in the segmented approach than in the naive approach in two of our six transfers with a mean error difference of `r dftable(5)[[2]][6]` (95% CI `r round(cis[6+24],2)` to `r round(cis[6+36+24],2)`) in the `r strata.combinations[[5]][1]` to `r strata.combinations[[5]][2]` transfer and `r dftable(1)[[2]][6]` (95% CI `r round(cis[6],2)` to `r round(cis[6+36],2)`) in the `r strata.combinations[[1]][1]` to `r strata.combinations[[1]][2]` transfer.
 
-```{r, echo = FALSE, fig.cap = 'Approach differences for all transfer combinations. Each black dot represents the difference between the naive and the segmented approach in one simulated sample with the red dot representing the mean approach difference across all simulations. The bars indicate the 95% CI. astrix (*) above the mean approach difference indicates statistical significant difference.'}
+We found statistically worse performance in the segmented approach than in the naive approach in four of our six transfers with a mean error difference of `r dftable(3)[[2]][6]` (95% CI `r round(cis[6+12],2)` to `r round(cis[6+36+12],2)`) in the `r strata.combinations[[3]][1]` to `r strata.combinations[[3]][2]` transfer, `r dftable(2)[[2]][6]` (95% CI `r round(cis[6+6],2)` to `r round(cis[6+36+6],2)`) in the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer, `r dftable(4)[[2]][6]` (95% CI `r round(cis[6+18],2)` to `r round(cis[6+36+18],2)`) in the `r strata.combinations[[4]][1]` to `r strata.combinations[[4]][2]` transfer and `r dftable(6)[[2]][6]` (95% CI `r round(cis[6+30],2)` to `r round(cis[6+36+30],2)`) in the `r strata.combinations[[2]][1]` to `r strata.combinations[[2]][2]` transfer. All error differences with mean error difference and CI are shown in figure 6 for each transfer combination.
+
+```{r, echo = FALSE, fig.cap = 'Error differences between the naive approach and the segmented approach for all transfer combinations. Each black dot represents the error difference between the naive and the segmented approach for one simulated sample with the red dot representing the mean error difference across all simulations. The bars indicat the 95% CI. Asterisk (*) above the mean error difference indicate significance.'}
 jitterplot(6)
 ```
