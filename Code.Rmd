@@ -267,7 +267,9 @@ jitterplot <- function(n) {
     cisub <- c()
     ppe <- c()
     signi <-c()
-    while (i <= 5) {
+    if (n == 1) {k = 2
+    } else {k = 5}
+    while (i <= k) {
         #all transfer names in a list in order to label all values with correct transfers
         trans <- c(trans, rep(colnames(simulation.data)[n+i*6], n.simulations))
         
@@ -291,33 +293,51 @@ jitterplot <- function(n) {
                          'Values' =values,
                          'Significance' = signi)
     
-    #converting boolean TRUE/FALSE to axtris or not for significance
+#converting boolean TRUE/FALSE to axtris or not for significance
     tempdf$Significance[tempdf$Significance == FALSE] <- '*'
     tempdf$Significance[tempdf$Significance == TRUE] <- ''
     
-    #new xlabels and y labes
-    newxlabels <- c('France to USA', 'Switzerland to USA', 'USA to France', 'Switzerland to France', 'USA to Switzerland', 'France to Switzerland')
-    newylabels <- c('Development sample performance (%)', 
-                    'True validation performance (%)', 
-                    'Predicted validation performance (%)', 
-                    'Naive approach absolute difference',
-                    'Segmented approach absolute difference',
-                    'Difference between naive and segmented approach')
+    #new xlabels and y labes and sizes
+    if (n == 1) {newxlabels <- c('France', 'Switzerland', 'USA')
+    } else {newxlabels <- c('France to USA', 'Switzerland to USA', 'USA to France', 'Switzerland to France', 'USA to Switzerland', 'France to Switzerland')}
+    newylabels <- c('Accuracy in development sample (%)', 
+                    'Accuracy in validation sample (%)', 
+                    'Predicted accuracy in validation sample (%)', 
+                    'Error in naive approach',
+                    'Error in segmented approach',
+                    'Error difference between naive and segmented approach')
+    
+    
+    size.position.jitter <- c(0.15, 0.2)
+    width.errorbar <- c(0.35, 0.5)
+    xlabels <- c('Development sample', 'Transfers')
+    
+    if (n == 1) {
+        size.position.jitter <- size.position.jitter[1]
+        width.errorbar <- width.errorbar[1]
+        xlabels <- xlabels[1]
+    } else {
+        size.position.jitter <- size.position.jitter[2]
+        width.errorbar <- width.errorbar[2]
+        xlabels <- xlabels[2]
+    }
     
     #ploting jitterplot + errorbars + mean pointestimate and significance axtris
     p <- ggplot() +
-        geom_jitter(data = tempdf, aes(x = Transfers, y = Values), alpha = 0.09, position=position_jitter(0.2)) +
-        geom_errorbar(data = tempdf, aes(x = Transfers, y = Values, ymin = cislb, ymax = cisub), size = 0.1, width=0.5, color = "red") +
+        geom_jitter(data = tempdf, aes(x = Transfers, y = Values), alpha = 0.09, position=position_jitter(size.position.jitter)) +
+        geom_errorbar(data = tempdf, aes(x = Transfers, y = Values, ymin = cislb, ymax = cisub), size = 0.1, width=width.errorbar, color = "red") +
         geom_point(data = tempdf, aes(x = Transfers, y = ppe), color= "red") +
         scale_x_discrete(breaks=c(unique(tempdf$Transfers)), 
                          labels= newxlabels) +
         ylab(newylabels[n]) +
+        xlab(xlabels) +
         coord_flip() +
         theme_test() 
         if (n >= 6) {
             p <- p + geom_hline(yintercept = 0, alpha = 0.4)
             p <- p + geom_text(data = tempdf, aes(x = Transfers, y = ppe, label = Significance), nudge_x = 0.3, alpha = 0.015)
         }
+
     #returns our plot
     return(p)
     
@@ -379,6 +399,55 @@ dftable <- function(n) {
 
 
 #kableone(Pctable)
+
+
+#ordning i dftable
+#dftable(1)
+#dftable(1)[[2]][1]
+
+#strata.combinations[[1]][1]
+#strata.combinations[[1]][2]
+
+#dftable(2)
+#strata.combinations[[2]][1]
+#strata.combinations[[2]][2]
+
+#dftable(3)
+#strata.combinations[[3]][1]
+#strata.combinations[[3]][2]
+
+#dftable(4)
+#strata.combinations[[4]][1]
+#strata.combinations[[4]][2]
+
+#dftable(5)
+#strata.combinations[[5]][1]
+#strata.combinations[[5]][2]
+
+#dftable(6)
+#strata.combinations[[6]][1]
+#strata.combinations[[6]][2]
+
+#ordningen i jitterplot
+#strata.combinations[[5]][1]
+#strata.combinations[[5]][2]
+
+#strata.combinations[[3]][1]
+#strata.combinations[[3]][2]
+
+#strata.combinations[[2]][1]
+#strata.combinations[[2]][2]
+
+#strata.combinations[[4]][1]
+#strata.combinations[[4]][2]
+
+#strata.combinations[[1]][1]
+#strata.combinations[[1]][2]
+
+#strata.combinations[[6]][1]
+#strata.combinations[[6]][2]
+
+#strata.combinations
 ```
 # Introduction
 In medicine, healthcare professionals are daily confronted with a wide range of information that needs to be processed in order to make informed clinical decisions. To help healthcare professionals make such informed decisions, prediction models (also referred to as prediction score or prediction rules) have been implemented in healthcare [@steyerberg2013prognosis] [@moons2009prognosis]. These prediction models can be defined as statistical algorithms that predict the risk of a specific outcome in an individual [@moons2009prognosis] [@collins2015transparent]. The prediction models are capable of this task due to being trained in finding patterns in predictor data that has been labeled with outcome. These patterns can then be used in order to predict outcome based on new unlabeled predictor data [@deo2015machine].
@@ -492,18 +561,14 @@ kableone(Pctablesim, caption = 'Baseline characteristics of the simulated sample
 ```
 
 ## Development sample accuracies
-We found the mean accuracy within the development sample to be 
-`r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within `r strata.combinations[[5]][1]`, 
-`r dftable(3)[[2]][1]` % (95% CI `r round(cis[1+12],2)` to `r round(cis[1+36+12],2)`) within `r strata.combinations[[3]][1]`, 
-`r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within `r strata.combinations[[2]][1]`, 
-`r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within `r strata.combinations[[4]][1]`,
-`r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within `r strata.combinations[[1]][1]`,
-`r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within `r strata.combinations[[6]][1]`.
-All development sample accuracies with the mean accuracy and CI for each country are shown in figure 1.
-*OBS dubbla, måste ta bort från jitterplot och fixa till så det ser rätt ut*
+We found the mean accuracy within the development sample to be `r dftable(5)[[2]][1]` % (95% CI `r round(cis[1+24],2)` to `r round(cis[1+36+24],2)`) within `r strata.combinations[[5]][1]`, `r dftable(2)[[2]][1]` % (95% CI `r round(cis[1+6],2)` to `r round(cis[1+36+6],2)`) within `r strata.combinations[[2]][1]` and `r dftable(1)[[2]][1]` % (95% CI `r round(cis[1],2)` to `r round(cis[1+36],2)`) within `r strata.combinations[[1]][1]`. All development sample accuracies with the mean accuracy and CI for each country are shown in figure 1.
 
 ```{r, echo = FALSE, fig.cap = 'Development sample accuracies in each development sample. Each black dot represents the development sample accuracy in one simulated sample with the red dot representing the mean accuracy across all simulations. The bars indicate the 95% CI'}
 jitterplot(1)
+
+#`r dftable(3)[[2]][1]` % (95% CI `r cis[1+12]` to `r cis[1+36+12]`) within `r strata.combinations[[3]][1]`, 
+#`r dftable(4)[[2]][1]` % (95% CI `r round(cis[1+18],2)` to `r round(cis[1+36+18],2)`) within `r strata.combinations[[4]][1]`,
+#`r dftable(6)[[2]][1]` % (95% CI `r round(cis[1+30],2)` to `r round(cis[1+36+30],2)`) within `r strata.combinations[[6]][1]`.
 ```
 
 ## Validation sample accuracies
