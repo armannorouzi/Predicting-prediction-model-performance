@@ -608,9 +608,45 @@ We found statistically worse performance in the segmented approach than in the n
 jitterplot(6)
 ```
 # Discussion
-The aim of this study was to develop and test a method that can predict the predictive performance of a prediction model after transfer utilizing unlabeled data. We were able to develop such a method, but when we tested the method, the quality of the predictions that were made varied. We found that that the methods predicted accuracy, in two out of six simulated transfers, were a better prediction of the validation sample accuracy than the development sample accuracy. This however was not the case in the remaining four simulated transfers, where the development sample accuracy was a better prediction of the validation sample accuracy than the methods predicted accuracy.
+## Key findings
+To the best of our knowledge, at present, there are no methods that can predict the predictive performance of a prediction model after transfer utilizing unlabeled data. In this study we aimed to develop and test such a method. We found that in the majority (4/6) of our simulated transfers, our method's predicted accuracies were significantly worse than the development sample accuracies at predicting the validation sample accuracies. These results suggest against our hypothesis, that our method's predicted accuracies would be as good or better than the development sample accuracies, at predicting the validation sample accuracies.
+
+## Assoaciations to other studies
+### ICU admissions
+The prevalence of ICU admission in our study was 13.1% (etc... maybe mention more here?)
+
+### other models looking at similar prediction models? NEWS models etc.
+No models seem to use only our model predictors.
+
+### Naive approach
+We found that in the majority (5/6) of our simulated transfers, the accuracies of our prediction models were significantly worse in the validation samples than in the development samples. These findings are consistent with the concluding remarks of Moons et al [@moons2012risk], that most internally validated prediction models perform worse when introduce to new sets of individuals. Ohnuma et al [@insertHere] found similar losses in performance in the prediction models that they reviewed. https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0169341#pone.0169341.ref035 
+
+### segmented approach
+mention something here?
 
 ## Strengths and limitations
-## Clinical/practical applications
+The strength of our study is that to the best of our knowledge, this is the first study to develop and test a method that predicts the predictive performance of a prediction model after transfer utilizing unlabeled data.
+
+However, our study also contains several limitations. 
+first, due to our study design being a secondary analysis, our results are only hypothesis generating. 
+
+Second, due to the small sample sizes in some of our countries, we decided to simulate new participants. These simulated participants are not a good representation of true participants, partly due to being simulated, but also due to how the outcomes were simulated. The outcomes were simulated using logistic regression models that were trained with the sample sizes from the different countries. This may have led us to receiving different qualities of simulated outcomes, due to the fact that the sample size may have not been large enough in some of the countries. This in itself could have led to us getting larger errors in our segmented approach than the naive approach despite the fact that we have more similar model predictors in the segmented approach than in the naive approach.
+
+third, this study only tests the method through the use of logistic regression models and no other statistical classification models.
+
+forth, in our study we are only assessing the performance of all of our prediction models with a cutoff level of 0.5. Along with this and the fact that we only assess the performance by the number of correct predictions relative to the number of total predictions, we cannot assess our methods discriminatory ability. 
+
+fifth, in this study we can only assess our method when 80% of the development sample is used for training the prediction model that is transferred, while 100% of the development sample is used to identify the segmented sample. This may have lead to some of the segmented samples having all of its data in the training sample, some having parts of its data in the training sample and some having none of its data in the training sample.
+
+six, not adjusting for confounding factors can have an effect on our prediction models? for instance age?
+
+## Significance
+Although the model predictors are theoretically more similar between the segmented samples and the validation samples, our results suggest against our method being a better prediction of the validation sample accuracies, than the development sample accuracies. However, due to the limitations of this study, our results may not assess the true performance of our method. Hence, the question remains as to whether our methods prediction is a better prediction of the accuracy of the validation sample than the development sample.
+
 ## Future studies
-# Conclusions
+Trying to improve on the limitations of our study:
+Look at different statistical classification models
+assess AUROC as the performance instead of the accuracy as the performance.
+use larger samples with already developed prediction models
+do more transfers to assess how the method generally performs.
+
