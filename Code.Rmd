@@ -609,49 +609,51 @@ jitterplot(6)
 ```
 # Discussion
 ## Key findings
-To the best of our knowledge, at present, there are no methods that can predict the predictive performance of a prediction model after transfer utilizing unlabeled data. In this study we aimed to develop and test such a method. We found that in the majority (4/6) of our simulated transfers, our method's predicted accuracies were significantly worse than the development sample accuracies at predicting the validation sample accuracies. These results suggest against our hypothesis, that our method's predicted accuracies would be as good or better than the development sample accuracies, at predicting the validation sample accuracies.
+At present, no methods exist that can predict the performance of a prediction model after it has been transferred while utilizing unlabeled data. In this study, we have developed and tested such a method. We found that our methods predicted accuracy were significantly worse than the apparent accuracy at predicting the accuracy in the country to which the prediction model was transferred. This was the case in the four of our six simulated transfers which suggest against our hypothesis, that our methods predicted accuracy would be as good or better than the apparent accuracy at predicting the accuracy of the prediction model after transfer.
 
-## Assoaciations to other studies
-### ICU admissions
-The prevalence of ICU admission in our study was 13.1% (etc... maybe mention more here?)
+## Naive and segmented approach
+We also found that the accuracy in the transfer country was significantly worse than the accuracy in the country in which the model was developed. This was the case in five of our six simulated transfers, which suggest that our predictions were optimistic. These findings are consistent with the concluding remarks of Moons et al [@moons2012risk], that most prediction models perform worse in new sets of individuals that differ from the individuals that were used to develop the prediction models. Similar losses in performance has been reported in the prediction models that Ohnuma et al [@inserthere] reviewed.
 
-### other models looking at similar prediction models? NEWS models etc.
-No models seem to use only our model predictors.
-<!-- I think that you can briefly discuss what the data looked like in relation to other studies but don't spend too much time on it -->
+We also found that the accuracy in the transfer countries were significantly worse than our methods predicted accuracy. This was the case in four of our six simulated transfers. This suggests that our predictions were still optimistic. These findings could be due to segmented samples being present in the sample that were used to train the prediction models. It could also be due to the outcomes being different although the model predictors being more similar. 
 
-### Naive approach
-We found that in the majority (5/6) of our simulated transfers, the accuracies of our prediction models were significantly worse in the validation samples than in the development samples. These findings are consistent with the concluding remarks of Moons et al [@moons2012risk], that most internally validated prediction models perform worse when applied to new sets of individuals. Ohnuma et al [@insertHere] found similar losses in performance in the prediction models that they reviewed. https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0169341#pone.0169341.ref035 
+## Other methods
+Although this is the first method that predicts the performance of a prediction model after it has been transferred while utilizing unlabeled data, similar methods exist that predict the performance in similar populations as the data used to train the prediction model. Some of these methods include different types of bootstrapping, cross-validation and split-sampling [@insert4here]. Bootstrapping has been previously claimed to be the most efficient at predicting the performance in similar populations [@insert8here]. Steyerberg et al [@insert] showed that regular bootstrapping is to be preferred when they compared different methods that predict the performance in similar populations.
 
-<!-- You can definitely expand this section. Look at studies that compare different ways of reducing overfitting, for example bootstrapping, K-fold crossvalidation, jacknife etc. Also discuss optimism and ways to estimate that and how that relates to what you've done here -->
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0169341#pone.0169341.ref035
 
-### segmented approach
-mention something here?
+https://www.tandfonline.com/doi/abs/10.1080/01621459.1983.10477973
+https://books.google.se/books?hl=sv&lr=&id=gLlpIUxRntoC&oi=fnd&pg=PR14&ots=AauyS3KaF1&sig=Cw4WtZWZRspi_5QlJy-EuTMmvts&redir_esc=y#v=onepage&q&f=false
+https://www.tandfonline.com/doi/abs/10.1080/01621459.1997.10474007
+https://www.tandfonline.com/doi/abs/10.1080/00031305.1990.10475704
 
-<!-- You can probably merge this section with the section on the naive approach -->
+https://www-sciencedirect-com.proxy.kib.ki.se/science/article/pii/S0895435601003419
 
 ## Strengths and limitations
-The strength of our study is that to the best of our knowledge, this is the first study to develop and test a method that predicts the predictive performance of a prediction model after transfer utilizing unlabeled data. <!-- Add one or two sentences here about why it would be useful with such a method -->
+The strength of our study is that to the best of our knowledge, this is the first study to develop and test a method that predicts the performance of a prediction model after transfer while utilizing unlabeled data. Such a method could provide information about how a prediction model would perform after it has been transferred. This information could be used to simplify the implementation of the prediction model and therefore indirectly improve decision making of healthcare professionals, patient health outcome and/or cost effectiveness of care. 
 
-However, our study also has several limitations. 
-first, due to our study design being a secondary analysis, our results are only hypothesis generating. <!-- Expand on this. Why is i only hypothesis generating? How would you design a study to answer your question that is not hypothesis generating?-->
+However, our study has its limitations. First, due to the design of our study being a secondary analysis of existing data, residual confounding is likely. Our results are therefore at best only hypothesis generating. To ideally test our method in future research, data should be collected for this specific hypothesis to minimize residual confounding.
 
-Second, due to the small sample sizes in some of our countries, we decided to simulate new participants. These simulated participants are not a good representation of true participants, partly due to being simulated, but also due to how the outcomes were simulated. The outcomes were simulated using logistic regression models that were trained with the sample sizes from the different countries. This may have led us to receiving different qualities of simulated outcomes, due to the fact that the sample size may have not been large enough in some of the countries. This in itself could have led to us getting larger errors in our segmented approach than the naive approach despite the fact that we have more similar model predictors in the segmented approach than in the naive approach.<!-- Good point. Maybe we should consider trying a different dataset before we publish -->
+Second, due to having small sample sizes in some of our countries, we decided to simulate new samples. These new samples were likely poor representatives of real samples. Partly due to being simulated, but also due to the model outcomes being simulated using logistic regression models that were trained with the small sample sizes. This likely resulted in varying quality in the model outcomes in the different countries, which could have reflected badly on our method. To avoid this limitation in future studies, larger samples should be used and simulation of new samples should be avoided.
 
-third, this study only tests the method through the use of logistic regression models and no other statistical classification models. <!-- You can expand on this. Do you think that the results would have been different with another classifier?-->
+Third, due to simplicity, we chose to only assess the performance of the prediction models in terms of the number of correct predictions compared to the total number of predictions (our accuracy). This was also done just for one specific decision threshold. To avoid these limitations in future studies, different types of measurements for performance should be studied such as the area under the receiver operating characteristic curve that is independent of the decision threshold. 
 
-fourth, in our study we are only assessing the accuracy of all of our prediction models with a cutoff level of 0.5. Along with this and the fact that we only assess the performance by the number of correct predictions relative to the number of total predictions, we cannot assess our methods discriminatory ability. 
+Fourth, due to us selecting model variables based on availability and them being continuous without any significance testing, it is likely that we produced selection bias and optimism in our prediction models as a result of overfitting [@insertmsh]. This may have reflected poorly on our method and should be avoided in future  research testing this method. 
+https://www-bmj-com.proxy.kib.ki.se/content/338/bmj.b604.long
 
-fifth, in this study we can only assess our method when 80% of the development sample is used for training the prediction model that is transferred, while 100% of the development sample is used to identify the segmented sample. This may have lead to some of the segmented samples having all of its data in the training sample, some having parts of its data in the training sample and some having none of its data in the training sample.
+(side note)
+Fifth, our method of selecting a prediction model that is less over-fitted by utilizing cross-validation is a method for reducing overfitting in models that use decision trees and not logistic regression. This also creates a problem where 80% of the development sample is used to train, while 100% is used to assess the accuracy which may lead to lower accuracy in the development sample. This however also affects our segmented sample as the segments might not always be present in the sample that is used to train the prediction model, which may lower the accuracy in the segmented sample. In future studies the prediction model should be trained on 100% of the development sample and its performance in that sample should be done with 100% of the development sample while overfitting should be reduced based on sample size and variable selection strategies.
 
-six, not adjusting for confounding factors can have an effect on our prediction models? for instance age? <!-- Confounders are not really a thing when you are researching prediction models. Age may be an important predictor that we didn't include, but it wouldn't "confound" the way this concept is generally understood in biostatistics -->
+Sixth, due to only assessing our method with the use of logistic regression, we can not draw conclusions on how our method would perform with other statistical algorithms. We argue however that this may not be a problem, as the difference should be minimal. 
 
 ## Significance
-Although the model predictors are theoretically more similar between the segmented samples and the validation samples, our results suggest against our method being a better prediction of the validation sample accuracies, than the development sample accuracies. However, due to the limitations of this study, our results may not assess the true performance of our method. Hence, the question remains as to whether our methods prediction is a better prediction of the accuracy of the validation sample than the development sample.
+Since we have found results that contradict our hypothesis, we recommend that our method should not be used to predict the accuracy of a prediction model after it has been transferred. This recommendation is based on this study, which has many limitations. Hence, more research is needed to provide more firm recommendations.
 
 ## Future studies
-Trying to improve on the limitations of our study:
-Look at different statistical classification models
-assess AUROC as the performance instead of the accuracy as the performance.
-use larger samples with already developed prediction models
-do more transfers to assess how the method generally performs.
+A study that is improving on the limitations of our study. Collecting data to reduce residual confounding, increasing the sample sizes to reduce overfitting and to avoid simulating new samples, measuring different types of performance independent of the decision threshold, reducing selection bias and optimism through model variable selection techniques.
 
+A study that is comparing already established methods for predicting the performance of a prediction model within similar populations. These methods are used for predicting how the prediction models perform within similar populations and not after transfer. However, a comparison how these perform in contrast to our method could give further insight whether it is necessary to collect the unlabeled data.
+
+# Conclusion
+Even though our method is utilizing unlabeled data to predict the accuracy of a prediction model after it has been transferred, the results in this study suggest that our methods predictions are not as good or better than the accuracy that is acquired in the sample that is used to train the prediction model. 
+
+# References
