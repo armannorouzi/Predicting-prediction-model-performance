@@ -13,34 +13,34 @@
 - [x] Revise study plan based on feedback 
 
 ### 15 Sept - 22 Sept (Week 3)
-- First code written that imports and cleans the data  
-- Progress report drafted and uploaded to repository
+- [x] First code written that imports and cleans the data  
+- [x] Progress report drafted and uploaded to repository
 
 ### 22 Sept - 29 Sept (Week 4)
-- Revised code based on feedback
-- Revised progress report based on feedback and submit in canvas
-- Added code that creates first table of sample characteristics
+- [x] Revised code based on feedback
+- [x] Revised progress report based on feedback and submit in canvas
+- [x] Added code that creates first table of sample characteristics
 
 ### 5 Okt (End of Week 4)
-- Progress report **Deadline** 5/10, 09:00.
+- [x] Progress report **Deadline** 5/10, 09:00.
 
 ### 29 Sept - 10 Nov (Week 5-10)
-- Code written that generates first set of preliminary results
-- Revised code based on feedback weekly
+- [x] Code written that generates first set of preliminary results
+- [x] Revised code based on feedback weekly
 
 ### 10 Nov - 24 Nov (Week 11-12)
-- Results section drafted and uploaded to repository
-- Revised code based on feedback
+- [x] Results section drafted and uploaded to repository
+- [x] Revised code based on feedback
 
 ### 24 Nov - 8 Dec (Week 13-14)
-- Discussion section drafted and uploaded to repository
-- Revised results based on feedback
+- [x] Discussion section drafted and uploaded to repository
+- [x] Revised results based on feedback
 
 ### 8 Dec - 15 Dec (Week 15)
-- Final project drafted and uploaded to repository
+- [x] Final project drafted and uploaded to repository
 
 ### 15 Dec - 22 Dec (Week 16)
-- Revised final project and upload second version to repository
+- [x] Revised final project and upload second version to repository
 
 ### 22 Dec - 29 Dec (Week 17)
 - Revised second version of final project
